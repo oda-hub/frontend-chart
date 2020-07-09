@@ -1,0 +1,190 @@
+apiVersion: v1
+data:
+  etc-apache2-site-ssl.conf: "<IfModule mod_ssl.c>\r\n\t<VirtualHost _default_:443>\r\n\t\tServerAdmin
+    webmaster@localhost\r\n\r\n\t\tDocumentRoot /var/www/astrooda\r\n\r\n\t\t# Available
+    loglevels: trace8, ..., trace1, debug, info, notice, warn,\r\n\t\t# error, crit,
+    alert, emerg.\r\n\t\t# It is also possible to configure the loglevel for particular\r\n\t\t#
+    modules, e.g.\r\n\t\t#LogLevel info ssl:warn\r\n\r\n\t\tErrorLog ${APACHE_LOG_DIR}/error.log\r\n\t\tCustomLog
+    ${APACHE_LOG_DIR}/access.log combined\r\n\r\n\t\t# For most configuration files
+    from conf-available/, which are\r\n\t\t# enabled or disabled at a global level,
+    it is possible to\r\n\t\t# include a line for only one particular virtual host.
+    For example the\r\n\t\t# following line enables the CGI configuration for this
+    host only\r\n\t\t# after it has been globally disabled with \"a2disconf\".\r\n\t\t#Include
+    conf-available/serve-cgi-bin.conf\r\n\r\n\t\t#   SSL Engine Switch:\r\n\t\t#   Enable/Disable
+    SSL for this virtual host.\r\n\t\tSSLEngine on\r\n\r\n\t\t#   A self-signed (snakeoil)
+    certificate can be created by installing\r\n\t\t#   the ssl-cert package. See\r\n\t\t#
+    \  /usr/share/doc/apache2/README.Debian.gz for more info.\r\n\t\t#   If both key
+    and certificate are stored in the same file, only the\r\n\t\t#   SSLCertificateFile
+    directive is needed.\r\n\t\tSSLCertificateFile\t/etc/ssl/certs/ssl-cert-snakeoil.pem\r\n\t\tSSLCertificateKeyFile
+    /etc/ssl/private/ssl-cert-snakeoil.key\r\n\r\n\t\t#   Server Certificate Chain:\r\n\t\t#
+    \  Point SSLCertificateChainFile at a file containing the\r\n\t\t#   concatenation
+    of PEM encoded CA certificates which form the\r\n\t\t#   certificate chain for
+    the server certificate. Alternatively\r\n\t\t#   the referenced file can be the
+    same as SSLCertificateFile\r\n\t\t#   when the CA certificates are directly appended
+    to the server\r\n\t\t#   certificate for convinience.\r\n\t\t#SSLCertificateChainFile
+    /etc/apache2/ssl.crt/server-ca.crt\r\n\r\n\t\t#   Certificate Authority (CA):\r\n\t\t#
+    \  Set the CA certificate verification path where to find CA\r\n\t\t#   certificates
+    for client authentication or alternatively one\r\n\t\t#   huge file containing
+    all of them (file must be PEM encoded)\r\n\t\t#   Note: Inside SSLCACertificatePath
+    you need hash symlinks\r\n\t\t#\t\t to point to the certificate files. Use the
+    provided\r\n\t\t#\t\t Makefile to update the hash symlinks after changes.\r\n\t\t#SSLCACertificatePath
+    /etc/ssl/certs/\r\n\t\t#SSLCACertificateFile /etc/apache2/ssl.crt/ca-bundle.crt\r\n\r\n\t\t#
+    \  Certificate Revocation Lists (CRL):\r\n\t\t#   Set the CA revocation path where
+    to find CA CRLs for client\r\n\t\t#   authentication or alternatively one huge
+    file containing all\r\n\t\t#   of them (file must be PEM encoded)\r\n\t\t#   Note:
+    Inside SSLCARevocationPath you need hash symlinks\r\n\t\t#\t\t to point to the
+    certificate files. Use the provided\r\n\t\t#\t\t Makefile to update the hash symlinks
+    after changes.\r\n\t\t#SSLCARevocationPath /etc/apache2/ssl.crl/\r\n\t\t#SSLCARevocationFile
+    /etc/apache2/ssl.crl/ca-bundle.crl\r\n\r\n\t\t#   Client Authentication (Type):\r\n\t\t#
+    \  Client certificate verification type and depth.  Types are\r\n\t\t#   none,
+    optional, require and optional_no_ca.  Depth is a\r\n\t\t#   number which specifies
+    how deeply to verify the certificate\r\n\t\t#   issuer chain before deciding the
+    certificate is not valid.\r\n\t\t#SSLVerifyClient require\r\n\t\t#SSLVerifyDepth
+    \ 10\r\n\r\n\t\t#   SSL Engine Options:\r\n\t\t#   Set various options for the
+    SSL engine.\r\n\t\t#   o FakeBasicAuth:\r\n\t\t#\t Translate the client X.509
+    into a Basic Authorisation.  This means that\r\n\t\t#\t the standard Auth/DBMAuth
+    methods can be used for access control.  The\r\n\t\t#\t user name is the `one
+    line' version of the client's X.509 certificate.\r\n\t\t#\t Note that no password
+    is obtained from the user. Every entry in the user\r\n\t\t#\t file needs this
+    password: `xxj31ZMTZzkVA'.\r\n\t\t#   o ExportCertData:\r\n\t\t#\t This exports
+    two additional environment variables: SSL_CLIENT_CERT and\r\n\t\t#\t SSL_SERVER_CERT.
+    These contain the PEM-encoded certificates of the\r\n\t\t#\t server (always existing)
+    and the client (only existing when client\r\n\t\t#\t authentication is used).
+    This can be used to import the certificates\r\n\t\t#\t into CGI scripts.\r\n\t\t#
+    \  o StdEnvVars:\r\n\t\t#\t This exports the standard SSL/TLS related `SSL_*'
+    environment variables.\r\n\t\t#\t Per default this exportation is switched off
+    for performance reasons,\r\n\t\t#\t because the extraction step is an expensive
+    operation and is usually\r\n\t\t#\t useless for serving static content. So one
+    usually enables the\r\n\t\t#\t exportation for CGI and SSI requests only.\r\n\t\t#
+    \  o OptRenegotiate:\r\n\t\t#\t This enables optimized SSL connection renegotiation
+    handling when SSL\r\n\t\t#\t directives are used in per-directory context.\r\n\t\t#SSLOptions
+    +FakeBasicAuth +ExportCertData +StrictRequire\r\n\t\t<FilesMatch \"\\.(cgi|shtml|phtml|php)$\">\r\n\t\t\t\tSSLOptions
+    +StdEnvVars\r\n\t\t</FilesMatch>\r\n\t\t<Directory /usr/lib/cgi-bin>\r\n\t\t\t\tSSLOptions
+    +StdEnvVars\r\n\t\t</Directory>\r\n\r\n\t\t#   SSL Protocol Adjustments:\r\n\t\t#
+    \  The safe and default but still SSL/TLS standard compliant shutdown\r\n\t\t#
+    \  approach is that mod_ssl sends the close notify alert but doesn't wait for\r\n\t\t#
+    \  the close notify alert from client. When you need a different shutdown\r\n\t\t#
+    \  approach you can use one of the following variables:\r\n\t\t#   o ssl-unclean-shutdown:\r\n\t\t#\t
+    This forces an unclean shutdown when the connection is closed, i.e. no\r\n\t\t#\t
+    SSL close notify alert is send or allowed to received.  This violates\r\n\t\t#\t
+    the SSL/TLS standard but is needed for some brain-dead browsers. Use\r\n\t\t#\t
+    this when you receive I/O errors because of the standard approach where\r\n\t\t#\t
+    mod_ssl sends the close notify alert.\r\n\t\t#   o ssl-accurate-shutdown:\r\n\t\t#\t
+    This forces an accurate shutdown when the connection is closed, i.e. a\r\n\t\t#\t
+    SSL close notify alert is send and mod_ssl waits for the close notify\r\n\t\t#\t
+    alert of the client. This is 100% SSL/TLS standard compliant, but in\r\n\t\t#\t
+    practice often causes hanging connections with brain-dead browsers. Use\r\n\t\t#\t
+    this only for browsers where you know that their SSL implementation\r\n\t\t#\t
+    works correctly.\r\n\t\t#   Notice: Most problems of broken clients are also related
+    to the HTTP\r\n\t\t#   keep-alive facility, so you usually additionally want to
+    disable\r\n\t\t#   keep-alive for those clients, too. Use variable \"nokeepalive\"
+    for this.\r\n\t\t#   Similarly, one has to force some clients to use HTTP/1.0
+    to workaround\r\n\t\t#   their broken HTTP/1.1 implementation. Use variables \"downgrade-1.0\"
+    and\r\n\t\t#   \"force-response-1.0\" for this.\r\n\t\t# BrowserMatch \"MSIE [2-6]\"
+    \\\r\n\t\t#\t\tnokeepalive ssl-unclean-shutdown \\\r\n\t\t#\t\tdowngrade-1.0 force-response-1.0\r\n\r\n\t</VirtualHost>\r\n</IfModule>\r\n\r\n#
+    vim: syntax=apache ts=4 sw=4 sts=4 sr noet\r\n"
+  etc-apache2.conf: "# This is the main Apache server configuration file.  It contains
+    the\r\n# configuration directives that give the server its instructions.\r\n#
+    See http://httpd.apache.org/docs/2.4/ for detailed information about\r\n# the
+    directives and /usr/share/doc/apache2/README.Debian about Debian specific\r\n#
+    hints.\r\n#\r\n#\r\n# Summary of how the Apache 2 configuration works in Debian:\r\n#
+    The Apache 2 web server configuration in Debian is quite different to\r\n# upstream's
+    suggested way to configure the web server. This is because Debian's\r\n# default
+    Apache2 installation attempts to make adding and removing modules,\r\n# virtual
+    hosts, and extra configuration directives as flexible as possible, in\r\n# order
+    to make automating the changes and administering the server as easy as\r\n# possible.\r\n\r\n#
+    It is split into several files forming the configuration hierarchy outlined\r\n#
+    below, all located in the /etc/apache2/ directory:\r\n#\r\n#\t/etc/apache2/\r\n#\t|--
+    apache2.conf\r\n#\t|\t`--  ports.conf\r\n#\t|-- mods-enabled\r\n#\t|\t|-- *.load\r\n#\t|\t`--
+    *.conf\r\n#\t|-- conf-enabled\r\n#\t|\t`-- *.conf\r\n# \t`-- sites-enabled\r\n#\t
+    \t`-- *.conf\r\n#\r\n#\r\n# * apache2.conf is the main configuration file (this
+    file). It puts the pieces\r\n#   together by including all remaining configuration
+    files when starting up the\r\n#   web server.\r\n#\r\n# * ports.conf is always
+    included from the main configuration file. It is\r\n#   supposed to determine
+    listening ports for incoming connections which can be\r\n#   customized anytime.\r\n#\r\n#
+    * Configuration files in the mods-enabled/, conf-enabled/ and sites-enabled/\r\n#
+    \  directories contain particular configuration snippets which manage modules,\r\n#
+    \  global configuration fragments, or virtual host configurations,\r\n#   respectively.\r\n#\r\n#
+    \  They are activated by symlinking available configuration files from their\r\n#
+    \  respective *-available/ counterparts. These should be managed by using our\r\n#
+    \  helpers a2enmod/a2dismod, a2ensite/a2dissite and a2enconf/a2disconf. See\r\n#
+    \  their respective man pages for detailed information.\r\n#\r\n# * The binary
+    is called apache2. Due to the use of environment variables, in\r\n#   the default
+    configuration, apache2 needs to be started/stopped with\r\n#   /etc/init.d/apache2
+    or apache2ctl. Calling /usr/bin/apache2 directly will not\r\n#   work with the
+    default configuration.\r\n\r\n\r\n# Global configuration\r\n#\r\n\r\n#\r\n# ServerRoot:
+    The top of the directory tree under which the server's\r\n# configuration, error,
+    and log files are kept.\r\n#\r\n# NOTE!  If you intend to place this on an NFS
+    (or otherwise network)\r\n# mounted filesystem then please read the Mutex documentation
+    (available\r\n# at <URL:http://httpd.apache.org/docs/2.4/mod/core.html#mutex>);\r\n#
+    you will save yourself a lot of trouble.\r\n#\r\n# Do NOT add a slash at the end
+    of the directory path.\r\n#\r\n#ServerRoot \"/etc/apache2\"\r\n\r\n#\r\n# The
+    accept serialization lock file MUST BE STORED ON A LOCAL DISK.\r\n#\r\nMutex file:${APACHE_LOCK_DIR}
+    default\r\n\r\n#\r\n# PidFile: The file in which the server should record its
+    process\r\n# identification number when it starts.\r\n# This needs to be set in
+    /etc/apache2/envvars\r\n#\r\nPidFile ${APACHE_PID_FILE}\r\n\r\n#\r\n# Timeout:
+    The number of seconds before receives and sends time out.\r\n#\r\nTimeout 300\r\n\r\n#\r\n#
+    KeepAlive: Whether or not to allow persistent connections (more than\r\n# one
+    request per connection). Set to \"Off\" to deactivate.\r\n#\r\nKeepAlive On\r\n\r\n#\r\n#
+    MaxKeepAliveRequests: The maximum number of requests to allow\r\n# during a persistent
+    connection. Set to 0 to allow an unlimited amount.\r\n# We recommend you leave
+    this number high, for maximum performance.\r\n#\r\nMaxKeepAliveRequests 100\r\n\r\n#\r\n#
+    KeepAliveTimeout: Number of seconds to wait for the next request from the\r\n#
+    same client on the same connection.\r\n#\r\nKeepAliveTimeout 5\r\n\r\n\r\n# These
+    need to be set in /etc/apache2/envvars\r\nUser ${APACHE_RUN_USER}\r\nGroup ${APACHE_RUN_GROUP}\r\n\r\n#\r\n#
+    HostnameLookups: Log the names of clients or just their IP addresses\r\n# e.g.,
+    www.apache.org (on) or 204.62.129.132 (off).\r\n# The default is off because it'd
+    be overall better for the net if people\r\n# had to knowingly turn this feature
+    on, since enabling it means that\r\n# each client request will result in AT LEAST
+    one lookup request to the\r\n# nameserver.\r\n#\r\nHostnameLookups Off\r\n\r\n#
+    ErrorLog: The location of the error log file.\r\n# If you do not specify an ErrorLog
+    directive within a <VirtualHost>\r\n# container, error messages relating to that
+    virtual host will be\r\n# logged here.  If you *do* define an error logfile for
+    a <VirtualHost>\r\n# container, that host's errors will be logged there and not
+    here.\r\n#\r\nErrorLog ${APACHE_LOG_DIR}/error.log\r\n\r\n#\r\n# LogLevel: Control
+    the severity of messages logged to the error_log.\r\n# Available values: trace8,
+    ..., trace1, debug, info, notice, warn,\r\n# error, crit, alert, emerg.\r\n# It
+    is also possible to configure the log level for particular modules, e.g.\r\n#
+    \"LogLevel info ssl:warn\"\r\n#\r\n#LogLevel warn\r\nLogLevel debug\r\n\r\n# Include
+    module configuration:\r\nIncludeOptional mods-enabled/*.load\r\nIncludeOptional
+    mods-enabled/*.conf\r\n\r\n# Include list of ports to listen on\r\nInclude ports.conf\r\n\r\n\r\n#
+    Sets the default security model of the Apache2 HTTPD server. It does\r\n# not
+    allow access to the root filesystem outside of /usr/share and /var/www.\r\n# The
+    former is used by web applications packaged in Debian,\r\n# the latter may be
+    used for local directories served by the web server. If\r\n# your system is serving
+    content from a sub-directory in /srv you must allow\r\n# access here, or in any
+    related virtual host.\r\n<Directory />\r\n\tOptions FollowSymLinks\r\n\tAllowOverride
+    None\r\n\tRequire all denied\r\n</Directory>\r\n\r\n<Directory /usr/share>\r\n\tAllowOverride
+    None\r\n\tRequire all granted\r\n</Directory>\r\n\r\n<Directory /var/www/>\r\n\tOptions
+    Indexes FollowSymLinks\r\n\tAllowOverride None\r\n\tRequire all granted\r\n</Directory>\r\n\r\nProxyPass
+    /dispatch-data/   http://dispatcher:32781/ connectiontimeout=3600 timeout=3600\r\nProxyPass
+    /astrooda/dispatch-data/   http://dispatcher:32781/ connectiontimeout=3600 timeout=3600\r\nProxyPass
+    /cdci/astrooda/dispatch-data/   http://dispatcher:32781/ connectiontimeout=3600
+    timeout=3600\r\n\r\nAlias \"/production-1.2/frontend/astrooda/\" \"/var/www/astrooda\"\r\nAlias
+    \"/cdci/astrooda\" \"/var/www/astrooda\"\r\nAlias \"/astrooda\" \"/var/www/astrooda\"\r\n\r\n<Directory
+    \"/var/www/astrooda\">\r\n  Options Indexes FollowSymLinks\r\n  AllowOverride
+    All\r\n  Require all granted\r\n</Directory>\r\n\r\n\r\n\r\n#<Directory /srv/>\r\n#\tOptions
+    Indexes FollowSymLinks\r\n#\tAllowOverride None\r\n#\tRequire all granted\r\n#</Directory>\r\n\r\n\r\n\r\n\r\n#
+    AccessFileName: The name of the file to look for in each directory\r\n# for additional
+    configuration directives.  See also the AllowOverride\r\n# directive.\r\n#\r\nAccessFileName
+    .htaccess\r\n\r\n#\r\n# The following lines prevent .htaccess and .htpasswd files
+    from being\r\n# viewed by Web clients.\r\n#\r\n<FilesMatch \"^\\.ht\">\r\n\tRequire
+    all denied\r\n</FilesMatch>\r\n\r\n\r\n#\r\n# The following directives define
+    some format nicknames for use with\r\n# a CustomLog directive.\r\n#\r\n# These
+    deviate from the Common Log Format definitions in that they use %O\r\n# (the actual
+    bytes sent including headers) instead of %b (the size of the\r\n# requested file),
+    because the latter makes it impossible to detect partial\r\n# requests.\r\n#\r\n#
+    Note that the use of %{X-Forwarded-For}i instead of %h is not recommended.\r\n#
+    Use mod_remoteip instead.\r\n#\r\nLogFormat \"%v:%p %h %l %u %t \\\"%r\\\" %>s
+    %O \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"\" vhost_combined\r\nLogFormat \"%h
+    %l %u %t \\\"%r\\\" %>s %O \\\"%{Referer}i\\\" \\\"%{User-Agent}i\\\"\" combined\r\nLogFormat
+    \"%h %l %u %t \\\"%r\\\" %>s %O\" common\r\nLogFormat \"%{Referer}i -> %U\" referer\r\nLogFormat
+    \"%{User-agent}i\" agent\r\n\r\n# Include of directories ignores editors' and
+    dpkg's backup files,\r\n# see README.Debian for details.\r\n\r\n# Include generic
+    snippets of statements\r\nIncludeOptional conf-enabled/*.conf\r\n\r\n# Include
+    the virtual host configurations:\r\nIncludeOptional sites-enabled/*.conf\r\n\r\n#
+    vim: syntax=apache ts=4 sw=4 sts=4 sr noet\r\n"
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: staging-1-3

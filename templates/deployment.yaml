@@ -1,0 +1,117 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "chart.fullname" . }}
+  labels:
+{{ include "chart.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "chart.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "chart.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+    {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      serviceAccountName: {{ template "chart.serviceAccountName" . }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      volumes:
+      - name: frontend-config-volume 
+        configMap:
+          name: frontend-config
+      - name: filelogdir
+        hostPath:
+          path: /scratch/workers/oda/frontend-logs
+          type: DirectoryOrCreate
+          #      - name: frontend-conf-secret
+          #        secret:
+          #          secretName: frontend-conf
+      containers:
+        - name: {{ .Chart.Name }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - name: http
+              containerPort: 8000
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 5
+            initialDelaySeconds: 15
+            periodSeconds: 60
+            timeoutSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+          env:
+          - name: DDA_USER_TOKEN
+            valueFrom:
+              secretKeyRef:
+                name: dda-interface-token
+                key: token.txt
+          - name: DQUEUE_DATABASE_URL
+            valueFrom:
+              secretKeyRef:
+                name: dqueue-database-url
+                key: url.txt
+          volumeMounts:
+          - mountPath: /var/log/containers
+            name: filelogdir
+#          - mountPath: /dispatcher/conf/conf_env.yml
+#            name: dispatcher-conf-secret
+#            subPath: conf_env.yml
+#            readOnly: true
+          - name: frontend-config-volume
+            mountPath: /etc/apache2/sites-enabled/default-ssl.conf
+            subPath: etc-apache2-site-ssl.conf
+            readOnly: true
+          - name: frontend-config-volume
+            mountPath: /etc/apache2/apache2.conf
+            subPath: etc-apache2.conf
+            readOnly: true
+                #          - name: MINIO_KEY
+                #            valueFrom:
+                #                secretKeyRef:
+                #                  name: minio-key
+                #                  key: minio-key.txt
+                #          - name: JENA_PASSWORD
+                #            valueFrom:
+                #                secretKeyRef:
+                #                  name: jena-password
+                #                  key: jena-password.txt
+                #          - name: LOGSTASH_ENTRYPOINT
+                #            valueFrom:
+                #                secretKeyRef:
+                #                  name: logstash-entrypoint
+                #  key: logstash-entrypoint.txt
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
