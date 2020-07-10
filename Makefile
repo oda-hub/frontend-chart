@@ -1,5 +1,2 @@
 upgrade:
-	bash make.sh upgrade
-
-install:
-	bash make.sh install
+	bash make.sh upgrade || bash make.sh install

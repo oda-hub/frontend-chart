@@ -52,11 +52,14 @@ ingress:
   - host: frontend.staging-1-3.odahub.io
     paths:
     - /()(.*)
+  - host: frontend.staging-1-3.internal.odahub.io
+    paths:
+    - /()(.*)
 
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
+    #  tls: #[]
+    #    - secretName: chart-example-tls
+    #      hosts:
+          #        - frontend.staging-1-3.odahub.io
 
 resources: 
    limits:
