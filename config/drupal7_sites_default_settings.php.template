@@ -249,7 +249,7 @@ $databases['default']['default'] = array(
     'driver' => 'mysql',
     'database' => 'astrooda',
     'username' => 'astrooda',
-    'password' => '.....',
+    'password' => '{{PASSWORD}}',
     'host' => 'mysql',
     'prefix' => '',
 );
