@@ -157,9 +157,9 @@ data:
     None\r\n\tRequire all denied\r\n</Directory>\r\n\r\n<Directory /usr/share>\r\n\tAllowOverride
     None\r\n\tRequire all granted\r\n</Directory>\r\n\r\n<Directory /var/www/>\r\n\tOptions
     Indexes FollowSymLinks\r\n\tAllowOverride None\r\n\tRequire all granted\r\n</Directory>\r\n\r\nProxyPass
-    /dispatch-data/   http://dispatcher:32781/ connectiontimeout=3600 timeout=3600\r\nProxyPass
-    /astrooda/dispatch-data/   http://dispatcher:32781/ connectiontimeout=3600 timeout=3600\r\nProxyPass
-    /cdci/astrooda/dispatch-data/   http://dispatcher:32781/ connectiontimeout=3600
+    /dispatch-data/   http://oda-dispatcher:8000/ connectiontimeout=3600 timeout=3600\r\nProxyPass
+    /astrooda/dispatch-data/   http://oda-dispatcher:8000/ connectiontimeout=3600 timeout=3600\r\nProxyPass
+    /cdci/astrooda/dispatch-data/   http://oda-dispatcher:8000/ connectiontimeout=3600
     timeout=3600\r\n\r\nAlias \"/production-1.2/frontend/astrooda/\" \"/var/www/astrooda\"\r\nAlias
     \"/cdci/astrooda\" \"/var/www/astrooda\"\r\nAlias \"/astrooda\" \"/var/www/astrooda\"\r\n\r\n<Directory
     \"/var/www/astrooda\">\r\n  Options Indexes FollowSymLinks\r\n  AllowOverride

@@ -307,6 +307,7 @@ $drupal_hash_salt = '';
  */
 
 #$base_url = 'http://mtmisdcvm1.selfip.com/drupal';  // NO trailing slash!
+$base_url = 'https://frontend.staging-1-3.odahub.io/cdci/astrooda';  // NO trailing slash!
 
 /**
  * PHP settings:

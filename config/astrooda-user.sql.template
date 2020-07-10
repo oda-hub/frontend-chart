@@ -1,0 +1,6 @@
+CREATE DATABASE IF NOT EXISTS astrooda;
+
+DROP USER  IF EXISTS 'astrooda'@'%';
+CREATE USER 'astrooda'@'%'  IDENTIFIED BY '{{PASSWORD}}';
+
+GRANT ALL PRIVILEGES ON astrooda.* TO 'astrooda'@'%';
