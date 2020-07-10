@@ -31,9 +31,9 @@ spec:
         hostPath:
           path: /scratch/workers/oda/frontend-logs
           type: DirectoryOrCreate
-          #      - name: frontend-conf-secret
-          #        secret:
-          #          secretName: frontend-conf
+      - name: frontend-settings-php
+        secret:
+          secretName: frontend-settings-php
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -42,11 +42,11 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
-              containerPort: 8000
+              containerPort: 80
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
+              path: /astrooda/astrooda
               port: http
             failureThreshold: 5
             initialDelaySeconds: 15
@@ -54,7 +54,7 @@ spec:
             timeoutSeconds: 30
           readinessProbe:
             httpGet:
-              path: /
+              path: /astrooda/astrooda
               port: http
             failureThreshold: 3
             initialDelaySeconds: 5
@@ -87,6 +87,10 @@ spec:
           - name: frontend-config-volume
             mountPath: /etc/apache2/apache2.conf
             subPath: etc-apache2.conf
+            readOnly: true
+          - name: frontend-settings-php
+            mountPath: /var/www/astrooda/sites/default/settings.php
+            subPath: drupal7_sites_default_settings.php
             readOnly: true
                 #          - name: MINIO_KEY
                 #            valueFrom:

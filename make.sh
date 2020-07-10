@@ -1,6 +1,7 @@
 
 function create-secret() {
-    echo
+    kubectl -n staging-1-3 delete secret frontend-settings-php
+    kubectl -n staging-1-3 create secret generic frontend-settings-php --from-file=drupal7_sites_default_settings.php=private/drupal7_sites_default_settings.php
 #    kubectl -n staging-1-3 delete secret dispatcher-conf
 #    kubectl -n staging-1-3 create secret generic dispatcher-conf --from-file=conf_env.yml=dispatcher/conf/conf_env.yml
 }
