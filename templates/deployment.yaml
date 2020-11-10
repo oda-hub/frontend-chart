@@ -62,17 +62,7 @@ spec:
             timeoutSeconds: 10
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
-          env:
-          - name: DDA_USER_TOKEN
-            valueFrom:
-              secretKeyRef:
-                name: dda-interface-token
-                key: token.txt
-          - name: DQUEUE_DATABASE_URL
-            valueFrom:
-              secretKeyRef:
-                name: dqueue-database-url
-                key: url.txt
+          #env:
           volumeMounts:
           - mountPath: /var/log/containers
             name: filelogdir
