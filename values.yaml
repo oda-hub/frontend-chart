@@ -34,32 +34,22 @@ securityContext: #{}
 
 service:
   type: ClusterIP
-  port: 443
+  port: 80
 
 ingress:
   enabled: true
-  annotations: #{}
-    nginx.ingress.kubernetes.io/rewrite-target: /$2
-    kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
   hosts:
-  - host: in.internal.odahub.io
+  - host: frontend.staging.iu.odahub.io
     paths:
-    - /staging-1.3/frontend(/|$)(.*) # set environment from elsewhere
-  - host: in.odahub.io
+    - /
+  hosts:
+  - host: frontend.staging.internal.odahub.io
     paths:
-    - /staging-1.3/frontend(/|$)(.*)
-  - host: frontend.staging-1-3.odahub.io
+    - /
+  hosts:
+  - host: frontend.staging.odahub.io
     paths:
-    - /()(.*)
-  - host: frontend.staging-1-3.internal.odahub.io
-    paths:
-    - /()(.*)
-
-    #  tls: #[]
-    #    - secretName: chart-example-tls
-    #      hosts:
-          #        - frontend.staging-1-3.odahub.io
+    - /
 
 resources: 
    limits:

@@ -1,7 +1,6 @@
-export ENVIRONMENT=staging-1-3
 
-function create-secret() {
-    kubectl -n staging-1-3 delete secret frontend-settings-php
+function create-secrets() {
+    kubectl -n $ODA_NAMESPACE delete secret frontend-settings-php
 
     (
         rm -fv private/drupal7_sites_default_settings.php
@@ -10,14 +9,14 @@ function create-secret() {
     )
    
 
-    kubectl -n staging-1-3 create secret generic frontend-settings-php --from-file=drupal7_sites_default_settings.php=private/drupal7_sites_default_settings.php
-#    kubectl -n staging-1-3 delete secret dispatcher-conf
-#    kubectl -n staging-1-3 create secret generic dispatcher-conf --from-file=conf_env.yml=dispatcher/conf/conf_env.yml
+    kubectl -n $ODA_NAMESPACE create secret generic frontend-settings-php --from-file=drupal7_sites_default_settings.php=private/drupal7_sites_default_settings.php
 }
 
 function upgrade() {
     set -x
-    helm upgrade -n ${NAMESPACE:?} --install oda-frontend . --set image.tag="$(cd frontend-container; git describe --always)" --wait
+    helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
+         -f $(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values) \
+         --set image.tag="$(cd frontend-container; git describe --always)" 
 }
 
 function user() {
@@ -29,15 +28,16 @@ function user() {
 
 
 function run-sql() {
+    # this all should be done in a k8s/job
     sql=${1:?}
 
 
-    kubectl port-forward svc/mysql 3307:3306 -n staging-1-3 &
+    kubectl port-forward svc/mysql 3307:3306 -n $ODA_NAMESPACE &
     proxy=$!
 
     sleep 1
 
-    MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace $ENVIRONMENT mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode; echo)
+    MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace $ODA_NAMESPACE mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode; echo)
 
     mysql --protocol=tcp -h 127.0.0.1 -P3307 -u root -p${MYSQL_ROOT_PASSWORD} < $sql
 
@@ -60,7 +60,7 @@ function db() {
 }
 
 function forward() {
-    kubectl port-forward oda-frontend-dcd58c84c-mhzj9 -n staging-1-3 8000:80
+    kubectl port-forward deployments/oda-frontend -n $ODA_NAMESPACE 8002:80
 }
 
 $@
