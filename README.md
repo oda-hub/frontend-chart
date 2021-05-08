@@ -11,7 +11,7 @@
 
 * Database:
   * [drupal database snapshot](https://github.com/oda-hub/frontend-drupal7-db-for-astrooda) as released 
-  * database also contains help pages, as released with the given version.[Astrooda help pages](https://github.com/oda-hub/astrooda-help-pages) can be edited on dev instance of drupal, and stored in database snapshot on release.
+  * database also contains help pages, as released with the given version. [Astrooda help pages](https://github.com/oda-hub/astrooda-help-pages) can be edited on dev instance of drupal, and stored in database snapshot on release.
 
 
 [mysql](https://github.com/oda-hub/mysql-chart) chart should be deployed separately.
