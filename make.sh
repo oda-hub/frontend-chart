@@ -63,4 +63,8 @@ function forward() {
     kubectl port-forward deployments/oda-frontend -n $ODA_NAMESPACE 8002:80
 }
 
+function drush-cc() {
+    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush cc all'
+}
+
 $@
