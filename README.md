@@ -1,18 +1,18 @@
 # Frontend Helm Chart
 
-* Frontend [container](https://gitlab.astro.unige.ch/oda/frontend/frontend-container) consists of the following components:
-  * an adapted [drupal](https://github.com/oda-hub/frontend-drupal7-for-astrooda) instance
-  * with an [astrooda](https://github.com/oda-hub/frontend-astrooda) module
-  * [bootstrap for astrooda](https://gitlab.astro.unige.ch/oda/frontend/bootstrap_astrooda)
-
-* Database:
-  * [drupal database snapshot](https://github.com/oda-hub/frontend-drupal7-db-for-astrooda) as released 
-  * database also contains help pages, as released with the given version.
-  * The [astrooda help pages](https://github.com/oda-hub/astrooda-help-pages) can be edited on dev instance of drupal, and stored in database snapshot on release.
-
 * Chart deployes:
   * apache with drupal
   * secrets are initialzied at deployment. 
+
+* Frontend [container](https://github.com/oda-hub/frontend-container) consists of the following components, and builds them with default make target:
+  * an adapted [drupal](https://github.com/oda-hub/frontend-drupal7-for-astrooda) instance
+  * with an [astrooda](https://github.com/oda-hub/frontend-astrooda) module
+  * [bootstrap for astrooda](https://github.com/oda-hub/frontend-bootstrap_astroda/bootstrap_astrooda)
+
+* Database:
+  * [drupal database snapshot](https://github.com/oda-hub/frontend-drupal7-db-for-astrooda) as released 
+  * database also contains help pages, as released with the given version.[Astrooda help pages](https://github.com/oda-hub/astrooda-help-pages) can be edited on dev instance of drupal, and stored in database snapshot on release.
+
 
 [mysql](https://github.com/oda-hub/mysql-chart) chart should be deployed separately.
   
