@@ -7,7 +7,7 @@
 * Frontend [container](https://github.com/oda-hub/frontend-container) consists of the following components, and builds them with default make target:
   * an adapted [drupal](https://github.com/oda-hub/frontend-drupal7-for-astrooda) instance
   * with an [astrooda](https://github.com/oda-hub/frontend-astrooda) module
-  * [bootstrap for astrooda](https://github.com/oda-hub/frontend-bootstrap_astroda/bootstrap_astrooda)
+  * [bootstrap for astrooda](https://github.com/oda-hub/frontend-bootstrap_astroda)
 
 * Database:
   * [drupal database snapshot](https://github.com/oda-hub/frontend-drupal7-db-for-astrooda) as released 
