@@ -56,7 +56,7 @@ function db-user() {
 }
 
 function db() {
-    git clone git@github.com:oda-hub/frontend-drupal7-db-for-astrooda.git -b master drupal7-db-for-astrooda || (cd drupal7-db-for-astrooda; git checkout staging-1.3; git pull)
+    git clone git@github.com:oda-hub/frontend-drupal7-db-for-astrooda.git -b master drupal7-db-for-astrooda || (cd drupal7-db-for-astrooda; git checkout master; git pull)
     run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
 }
 
