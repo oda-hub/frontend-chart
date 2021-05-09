@@ -15,6 +15,11 @@
 
 
 [mysql](https://github.com/oda-hub/mysql-chart) chart should be deployed separately.
+
+Please beware:
+
+*  The resulting page served under /cdci/astrooda/
+*  If there is a problem with opening the frontend, manual changes to drupal7_sites_default_settings.php.template may be needed: at least base_url and reverse_proxy_addresses
   
 Secrets are used for drupal auth and [JWT token] signing, and are ingested in database and other drupal deployment settings.
 
