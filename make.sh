@@ -16,7 +16,7 @@ function upgrade() {
     set -x
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values) \
-         --set image.tag="$(cd frontend-container; git describe --always)" 
+         --set image.tag="$(cd frontend-container; bash make.sh compute-version)" 
 }
 
 function user() {
@@ -55,7 +55,7 @@ function db-user() {
 }
 
 function db() {
-    git clone git@gitlab.astro.unige.ch:cdci/frontend/drupal7-db-for-astrooda.git -b staging-1.3 || (cd drupal7-db-for-astrooda; git checkout staging-1.3; git pull)
+    git clone git@gitlab.astro.unige.ch:cdci/frontend/drupal7-db-for-astrooda.git -b master || (cd drupal7-db-for-astrooda; git checkout master; git pull)
     run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
 }
 
@@ -65,6 +65,14 @@ function forward() {
 
 function drush-cc() {
     kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush cc all'
+}
+
+function drush-extensions() {
+    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c '
+        cd /var/www/astrooda; 
+        ~/.composer/vendor/bin/drush dis astrooda_magic -y
+        ~/.composer/vendor/bin/drush en astrooda_spi_acs -y
+        '
 }
 
 $@
