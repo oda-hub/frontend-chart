@@ -16,7 +16,7 @@ function upgrade() {
     set -x
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values) \
-         --set image.tag="$(cd frontend-container; git describe --always)" 
+         --set image.tag="$(cd frontend-container; bash make.sh compute-version)" 
 }
 
 function user() {
@@ -66,6 +66,14 @@ function forward() {
 
 function drush-cc() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush cc all'
+}
+
+function drush-extensions() {
+    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c '
+        cd /var/www/astrooda; 
+        ~/.composer/vendor/bin/drush dis astrooda_magic -y
+        ~/.composer/vendor/bin/drush en astrooda_spi_acs -y
+        '
 }
 
 $@
