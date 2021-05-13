@@ -13,6 +13,7 @@
   * [drupal database snapshot](https://github.com/oda-hub/frontend-drupal7-db-for-astrooda) as released 
   * database also contains help pages, as released with the given version. [Astrooda help pages](https://github.com/oda-hub/astrooda-help-pages) can be edited on dev instance of drupal, and stored in database snapshot on release.
 
+* Frontend extensions, corresponding to individual instruments, can be disabled at deployment, see [there](https://github.com/oda-hub/frontend-chart/blob/master/make.sh#L70).
 
 [mysql](https://github.com/oda-hub/mysql-chart) chart should be deployed separately.
 

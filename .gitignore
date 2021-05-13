@@ -2,3 +2,4 @@ frontend-container
 private
 drupal7-db-for-astrooda
 values-unige-dstic.yaml
+values-*.yaml

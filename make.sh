@@ -21,6 +21,7 @@ function upgrade() {
 
 function user() {
     (
+      mkdir -p private
       umask 0066
       openssl rand -base64  16 >  private/astrooda-user
     )
@@ -55,7 +56,7 @@ function db-user() {
 }
 
 function db() {
-    git clone git@gitlab.astro.unige.ch:cdci/frontend/drupal7-db-for-astrooda.git -b master || (cd drupal7-db-for-astrooda; git checkout master; git pull)
+    git clone git@github.com:oda-hub/frontend-drupal7-db-for-astrooda.git -b master drupal7-db-for-astrooda || (cd drupal7-db-for-astrooda; git checkout master; git pull)
     run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
 }
 
@@ -64,7 +65,7 @@ function forward() {
 }
 
 function drush-cc() {
-    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush cc all'
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush cc all'
 }
 
 function drush-extensions() {
