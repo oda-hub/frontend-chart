@@ -1,6 +1,6 @@
 
 function create-secrets() {
-    kubectl -n $ODA_NAMESPACE delete secret frontend-settings-php
+    kubectl -n ${ODA_NAMESPACE:?} delete secret frontend-settings-php
 
     (
         rm -fv private/drupal7_sites_default_settings.php
@@ -73,6 +73,39 @@ function drush-extensions() {
         ~/.composer/vendor/bin/drush dis astrooda_magic -y
         ~/.composer/vendor/bin/drush en astrooda_spi_acs -y
         '
+}
+
+function reset-drupal-admin() {
+    (
+        umask 0066
+        rm -fv private/drupal-admin
+        openssl rand -base64 32 > private/drupal-admin
+    )
+    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush upwd --password="'$(cat private/drupal-admin)'" sitamin'
+}
+
+function update_news() {
+    date=$(date) live=$(oda-node info 2>&1 | awk '/facts/ {gsub(" facts", "")} /live/' | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g") j2 -e date news.sql.template  > news.sql
+
+    run-sql news.sql
+    #run-sql <(echo 'use astrooda; select body_value from field_data_body where entity_id = 369;')
+}
+
+function jwt_key_generate() {
+    (
+        umask 0066
+        rm -fv private/jwt-key
+        openssl rand -base64 32 > private/jwt-key
+    )
+}
+
+function jwt_key_print() {
+    run-sql <(echo "use astrooda; select * from variable where name='jwt_link_key';")
+}
+
+function jwt_key_update() {
+    echo "use astrooda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":"$(cat private/jwt-key | xargs)"' where name='jwt_link_key';"
+    run-sql <(echo "use astrooda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":"$(cat private/jwt-key | xargs)"' where name='jwt_link_key';")
 }
 
 $@
