@@ -1,4 +1,8 @@
 apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-config
+  namespace: {{ .Values.environment }}
 data:
   # hm
   etc-apache2-site-ssl.conf: "<IfModule mod_ssl.c>\r\n\t<VirtualHost _default_:443>\r\n\t\tServerAdmin
@@ -185,7 +189,19 @@ data:
     snippets of statements\r\nIncludeOptional conf-enabled/*.conf\r\n\r\n# Include
     the virtual host configurations:\r\nIncludeOptional sites-enabled/*.conf\r\n\r\n#
     vim: syntax=apache ts=4 sw=4 sts=4 sr noet\r\n"
+
+---
+
+apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: frontend-config
+  name:  postfix-config
   namespace: {{ .Values.environment }}
+  labels:
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+  tx-smtp-relay-host: '{{ .Values.postfix.smtp.relayHost }}'
+  tx-smtp-relay-myhostname: '{{ .Values.postfix.smtp.relayMyhostname }}'
+  tx-smtp-relay-networks: '{{ .Values.postfix.smtp.relayNetworks }}'
+  postfix-custom-config: '{{ .Values.postfix.postfixCustomConfig }}'

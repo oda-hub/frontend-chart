@@ -16,7 +16,8 @@ function upgrade() {
     set -x
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values) \
-         --set image.tag="$(cd frontend-container; bash make.sh compute-version)" 
+         --set image.tag="$(cd frontend-container; bash make.sh compute-version)"  \
+         --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)"
 }
 
 function user() {
@@ -64,8 +65,12 @@ function forward() {
     kubectl port-forward deployments/oda-frontend -n $ODA_NAMESPACE 8002:80
 }
 
+function drush() {
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush '"${@}"
+}
+
 function drush-cc() {
-    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush cc all'
+    drush 'cc all'
 }
 
 function drush-extensions() {
@@ -89,7 +94,6 @@ function update_news() {
     date=$(date) live=$(oda-node info 2>&1 | awk '/facts/ {gsub(" facts", "")} /live/' | sed -r "s/\x1B\[([0-9]{1,3}(;[0-9]{1,2})?)?[mGK]//g") j2 -e date news.sql.template  > news.sql
 
     run-sql news.sql
-    #run-sql <(echo 'use astrooda; select body_value from field_data_body where entity_id = 369;')
 }
 
 function jwt_key_generate() {
@@ -100,13 +104,22 @@ function jwt_key_generate() {
     )
 }
 
+function jwt_link_expiration() {
+    # this should be really in a Job and value derived from chart values
+
+    echo -e "\033[32m was: \033[0m"
+    run-sql <(echo "use astrooda; select * from variable where name='jwt_link_expiration';")
+    run-sql <(echo "use astrooda; update variable set value='s:4:\"1440\";' where name='jwt_link_expiration';")
+
+    drush-cc
+}
+
 function jwt_key_print() {
     run-sql <(echo "use astrooda; select * from variable where name='jwt_link_key';")
 }
 
 function jwt_key_update() {
-    echo "use astrooda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":"$(cat private/jwt-key | xargs)"' where name='jwt_link_key';"
-    run-sql <(echo "use astrooda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":"$(cat private/jwt-key | xargs)"' where name='jwt_link_key';")
+    run-sql <(echo "use astrooda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":\""$(cat private/jwt-key | xargs)"\";' where name='jwt_link_key';")
 }
 
 $@
