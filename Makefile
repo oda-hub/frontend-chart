@@ -1,6 +1,9 @@
 upgrade:
 	bash make.sh upgrade
 
+upgrade-wait:
+	bash make.sh upgrade --wait
+
 
 create-secrets:
 	bash make.sh create-secrets
