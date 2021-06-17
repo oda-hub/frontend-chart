@@ -1,3 +1,4 @@
+ODA_NAMESPACE=${ODA_NAMESPACE:-oda-staging}
 
 function create-secrets() {
     kubectl -n ${ODA_NAMESPACE:?} delete secret frontend-settings-php
@@ -53,6 +54,12 @@ function db-user() {
         rm -fv private/astrooda-user.sql
         PASSWORD=$(cat private/astrooda-user) j2 config/astrooda-user.sql.template -e PASSWORD  > private/astrooda-user.sql
         run-sql private/astrooda-user.sql
+    )
+}
+
+function db-users() {
+    (
+        run-sql users.sql
     )
 }
 

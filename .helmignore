@@ -1,2 +1,4 @@
 frontend-container
 drupal7-db-for-astrooda
+*.sql
+astrooda-helppage-manager
