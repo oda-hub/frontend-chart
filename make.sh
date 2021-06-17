@@ -61,6 +61,23 @@ function db() {
     run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
 }
 
+function dump-db() {
+    # this all should be done in a k8s/job
+    out_sql=${1:?}
+
+
+    kubectl port-forward svc/mysql 3307:3306 -n $ODA_NAMESPACE &
+    proxy=$!
+
+    sleep 1
+
+    MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace $ODA_NAMESPACE mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode; echo)
+
+    mysqldump --protocol=tcp -h 127.0.0.1 -P3307 -u root -p${MYSQL_ROOT_PASSWORD} astrooda > $out_sql
+
+    kill -9 $proxy
+}
+
 function forward() {
     kubectl port-forward deployments/oda-frontend -n $ODA_NAMESPACE 8002:80
 }
