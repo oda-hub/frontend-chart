@@ -249,7 +249,7 @@ $databases['default']['default'] = array(
     'driver' => 'mysql',
     'database' => 'astrooda',
     'username' => 'astrooda',
-    'password' => '{{PASSWORD}}',
+    'password' => '{{env.PASSWORD}}',
     'host' => 'mysql',
     'prefix' => '',
 );
@@ -306,8 +306,7 @@ $drupal_hash_salt = '';
  * for you.
  */
 
-#$base_url = 'http://mtmisdcvm1.selfip.com/drupal';  // NO trailing slash!
-$base_url = 'https://frontend.staging.odahub.io/cdci/astrooda';  // NO trailing slash!
+$base_url = 'https://{{ ingress.hosts[0].host }}{{ astrooda_prefix }}';  // NO trailing slash!
 
 /**
  * PHP settings:
@@ -650,3 +649,5 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
  * @see drupal_clean_css_identifier()
  */
 # $conf['allow_css_double_underscores'] = TRUE;
+
+$conf['https'] = TRUE;

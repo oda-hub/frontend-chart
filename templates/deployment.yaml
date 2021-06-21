@@ -46,7 +46,7 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /cdci/astrooda
+              path: {{ .Values.astrooda_prefix }}
               port: http
             failureThreshold: 5
             initialDelaySeconds: 15
@@ -54,7 +54,7 @@ spec:
             timeoutSeconds: 30
           readinessProbe:
             httpGet:
-              path: cdci/astrooda
+              path: {{ .Values.astrooda_prefix }}
               port: http
             failureThreshold: 3
             initialDelaySeconds: 5
@@ -79,28 +79,28 @@ spec:
             subPath: drupal7_sites_default_settings.php
             readOnly: true                
 
-        # - name: {{ .Chart.Name }}-postfix
-        #   image: '{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}'
-        #   imagePullPolicy: {{ .Values.postfix.image.pullPolicy }}
-        #   ports:
-        #     - name: smtp
-        #       containerPort: 25
-        #   env:
-        #   - name: TX_SMTP_RELAY_HOST
-        #     valueFrom:
-        #       configMapKeyRef:
-        #         name: postfix-config
-        #         key: tx-smtp-relay-host
-        #   - name: TX_SMTP_RELAY_MYHOSTNAME
-        #     valueFrom:
-        #       configMapKeyRef:
-        #         name: postfix-config
-        #         key: tx-smtp-relay-myhostname
-        #   - name: POSTFIX_CUSTOM_CONFIG
-        #     valueFrom:
-        #       configMapKeyRef:
-        #         name: postfix-config
-        #         key: postfix-custom-config
+        - name: {{ .Chart.Name }}-postfix
+          image: '{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}'
+          imagePullPolicy: {{ .Values.postfix.image.pullPolicy }}
+          ports:
+            - name: smtp
+              containerPort: 25
+          env:
+          - name: TX_SMTP_RELAY_HOST
+            valueFrom:
+              configMapKeyRef:
+                name: postfix-config
+                key: tx-smtp-relay-host
+          - name: TX_SMTP_RELAY_MYHOSTNAME
+            valueFrom:
+              configMapKeyRef:
+                name: postfix-config
+                key: tx-smtp-relay-myhostname
+          - name: POSTFIX_CUSTOM_CONFIG
+            valueFrom:
+              configMapKeyRef:
+                name: postfix-config
+                key: postfix-custom-config
 
       {{- with .Values.nodeSelector }}
       nodeSelector:

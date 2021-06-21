@@ -1,12 +1,15 @@
 ODA_NAMESPACE=${ODA_NAMESPACE:-oda-staging}
 
+SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values)
+
 function create-secrets() {
     kubectl -n ${ODA_NAMESPACE:?} delete secret frontend-settings-php
 
     (
+        # yet another templating level, not ideal
         rm -fv private/drupal7_sites_default_settings.php
         umask 0066
-        PASSWORD=$(cat private/astrooda-user) j2 config/drupal7_sites_default_settings.php.template -e PASSWORD > private/drupal7_sites_default_settings.php
+        PASSWORD=$(cat private/astrooda-user) j2 -f yaml config/drupal7_sites_default_settings.php.template $SITE_VALUES -e env > private/drupal7_sites_default_settings.php
     )
    
 
@@ -16,7 +19,7 @@ function create-secrets() {
 function upgrade() {
     set -x
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
-         -f $(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values) \
+         -f $SITE_VALUES \
          --set image.tag="$(cd frontend-container; bash make.sh compute-version)"  \
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
 }
@@ -57,6 +60,8 @@ function db-user() {
     )
 }
 
+
+# also store news, webform results
 function db-users() {
     (
         run-sql users.sql
