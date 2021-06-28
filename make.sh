@@ -146,7 +146,7 @@ function jwt_link_expiration() {
 
     echo -e "\033[32m was: \033[0m"
     run-sql <(echo "use astrooda; select * from variable where name='jwt_link_expiration';")
-    run-sql <(echo "use astrooda; update variable set value='s:4:\"1440\";' where name='jwt_link_expiration';")
+    run-sql <(echo "use astrooda; update variable set value='s:4:\"2880\";' where name='jwt_link_expiration';")
 
     drush-cc
 }
@@ -157,6 +157,11 @@ function jwt_key_print() {
 
 function jwt_key_update() {
     run-sql <(echo "use astrooda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":\""$(cat private/jwt-key | xargs)"\";' where name='jwt_link_key';")
+}
+
+function jwt_configure() {
+    jwt_link_expiration
+    jwt_key_update
 }
 
 $@
