@@ -31,9 +31,16 @@ spec:
         hostPath:
           path: /scratch/workers/oda/frontend-logs
           type: DirectoryOrCreate
+      - name: frontend-files
+        persistentVolumeClaim:
+          claimName: frontend-files
       - name: frontend-settings-php
         secret:
           secretName: frontend-settings-php
+      {{ if .Values.dev_space_volume.enabled }}
+      - name: frontend-dev
+        {{- toYaml .Values.dev_space_volume.volume | nindent 8 }}
+      {{ end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -78,6 +85,15 @@ spec:
             mountPath: /var/www/astrooda/sites/default/settings.php
             subPath: drupal7_sites_default_settings.php
             readOnly: true                
+          - name: frontend-files
+            mountPath: /var/www/astrooda/sites/default/files
+            readOnly: false
+            #mountPath: /var/www/astrooda/sites/default/files/ctools
+          {{ if .Values.dev_space_volume.enabled }}
+          - name: frontend-dev
+            mountPath: /var/www/astrooda/dev
+            readOnly: true                
+          {{ end }}
 
         - name: {{ .Chart.Name }}-postfix
           image: '{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}'
