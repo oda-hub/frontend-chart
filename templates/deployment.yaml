@@ -6,6 +6,8 @@ metadata:
 {{ include "chart.labels" . | indent 4 }}
 spec:
   replicas: {{ .Values.replicaCount }}
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app.kubernetes.io/name: {{ include "chart.name" . }}
@@ -92,6 +94,7 @@ spec:
           {{ if .Values.dev_space_volume.enabled }}
           - name: frontend-dev
             mountPath: /var/www/astrooda/dev
+            subPath: {{ .Values.dev_space_volume.subPath }}
             readOnly: true                
           {{ end }}
 

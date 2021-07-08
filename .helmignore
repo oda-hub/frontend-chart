@@ -1,4 +1,8 @@
 frontend-container
+astrooda-helppage-manager
 drupal7-db-for-astrooda
 *.sql
-astrooda-helppage-manager
+.git
+postfix-container
+/private
+*config

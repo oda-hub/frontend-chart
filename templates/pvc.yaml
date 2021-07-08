@@ -1,0 +1,37 @@
+{{ if .Values.prepare_isdc_mount | default false }}
+
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: pv-isilon-integral
+spec:
+  accessModes:
+  - ReadOnlyMany
+  capacity:
+    storage: 2Gi
+  mountOptions:
+  - vers=3
+  - nolock
+  nfs:
+    path: {{ .Values.isdc.path_prefix }}
+    server: {{ .Values.isdc.nfs_server }}
+    readOnly: true    
+  persistentVolumeReclaimPolicy: Retain
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: pvc-isilon-integral
+  # namespace: foo
+spec:
+  storageClassName: "" # Empty string must be explicitly set otherwise default StorageClass will be set
+  volumeName: pv-isilon-integral
+  accessModes:
+  - ReadOnlyMany
+  resources:
+    requests:
+      storage: 2Gi
+
+{{ end }}
