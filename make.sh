@@ -97,6 +97,10 @@ function forward() {
 function drush() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush '"${@}"
 }
+ 
+function frontend-default-files() {
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cp -rfv /frontend-default-files/* /var/www/astrooda/sites/default/files/'
+}
 
 function drush-cc() {
     drush 'cc all'
