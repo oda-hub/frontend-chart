@@ -35,3 +35,16 @@ spec:
       storage: 2Gi
 
 {{ end }}
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: frontend-files
+spec:
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: vspherecsi
+  volumeMode: Filesystem

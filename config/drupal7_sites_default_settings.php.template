@@ -306,7 +306,7 @@ $drupal_hash_salt = '';
  * for you.
  */
 
-$base_url = 'https://{{ ingress.hosts[0].host }}{{ astrooda_prefix }}';  // NO trailing slash!
+$base_url = '{{ astrooda_base_url }}';  // NO trailing slash!
 
 /**
  * PHP settings:
