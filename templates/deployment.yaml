@@ -98,29 +98,6 @@ spec:
             readOnly: true                
           {{ end }}
 
-        - name: {{ .Chart.Name }}-postfix
-          image: '{{ .Values.postfix.image.repository }}:{{ .Values.postfix.image.tag }}'
-          imagePullPolicy: {{ .Values.postfix.image.pullPolicy }}
-          ports:
-            - name: smtp
-              containerPort: 25
-          env:
-          - name: TX_SMTP_RELAY_HOST
-            valueFrom:
-              configMapKeyRef:
-                name: postfix-config
-                key: tx-smtp-relay-host
-          - name: TX_SMTP_RELAY_MYHOSTNAME
-            valueFrom:
-              configMapKeyRef:
-                name: postfix-config
-                key: tx-smtp-relay-myhostname
-          - name: POSTFIX_CUSTOM_CONFIG
-            valueFrom:
-              configMapKeyRef:
-                name: postfix-config
-                key: postfix-custom-config
-
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

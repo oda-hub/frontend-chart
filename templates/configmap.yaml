@@ -381,18 +381,3 @@ data:
 
 
 
----
-
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name:  postfix-config
-  namespace: {{ .Values.environment }}
-  labels:
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
-data:
-  tx-smtp-relay-host: '{{ .Values.postfix.smtp.relayHost }}'
-  tx-smtp-relay-myhostname: '{{ .Values.postfix.smtp.relayMyhostname }}'
-  tx-smtp-relay-networks: '{{ .Values.postfix.smtp.relayNetworks }}'
-  postfix-custom-config: '{{ .Values.postfix.postfixCustomConfig }}'

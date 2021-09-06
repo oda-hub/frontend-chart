@@ -3,7 +3,7 @@
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: pv-isilon-integral
+  name: pv-isilon-integral{{ .Values.pv_suffix }}
 spec:
   accessModes:
   - ReadOnlyMany
@@ -27,7 +27,7 @@ metadata:
   # namespace: foo
 spec:
   storageClassName: "" # Empty string must be explicitly set otherwise default StorageClass will be set
-  volumeName: pv-isilon-integral
+  volumeName: pv-isilon-integral{{ .Values.pv_suffix }}
   accessModes:
   - ReadOnlyMany
   resources:

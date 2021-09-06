@@ -1,4 +1,4 @@
-ODA_NAMESPACE=${ODA_NAMESPACE:-oda-staging}
+ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 
 SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values)
 
@@ -61,7 +61,7 @@ function db-user() {
 }
 
 
-# also store news, webform results
+#TODO: also store news, webform results
 function db-users() {
     (
         run-sql users.sql
@@ -106,16 +106,26 @@ function drush-cc() {
     drush 'cc all'
 }
 
+function drush-reinstall-base() {
+        #~/.composer/vendor/bin/drush uninstall astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
+        cd /var/www/astrooda; 
+        ~/.composer/vendor/bin/drush pm-disable astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
+        ~/.composer/vendor/bin/drush pm-uninstall astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
+        ~/.composer/vendor/bin/drush en astrooda_spi_acs astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda -y
+        '
+}
+
 function drush-reinstall() {
     instrument=${1:?}
-    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c '
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
         ~/.composer/vendor/bin/drush dre astrooda_'${instrument}' -y
         '
 }
 
 function drush-extensions() {
-    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c '
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
         ~/.composer/vendor/bin/drush dis astrooda_magic -y
         ~/.composer/vendor/bin/drush en astrooda_spi_acs -y
@@ -128,7 +138,7 @@ function reset-drupal-admin() {
         rm -fv private/drupal-admin
         openssl rand -base64 32 > private/drupal-admin
     )
-    kubectl exec -it deployments/oda-frontend -n oda-staging -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush upwd --password="'$(cat private/drupal-admin)'" sitamin'
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush upwd --password="'$(cat private/drupal-admin)'" sitamin'
 }
 
 function update_news() {
