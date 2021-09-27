@@ -651,3 +651,7 @@ $conf['404_fast_html'] = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML+RDFa 1.0//EN"
 # $conf['allow_css_double_underscores'] = TRUE;
 
 $conf['https'] = TRUE;
+
+# to remove if images in files/styles work without it!
+$conf['image_allow_insecure_derivatives'] = TRUE;
+
