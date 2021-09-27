@@ -64,13 +64,14 @@ function db-user() {
 #TODO: also store news, webform results
 function db-users() {
     (
-        run-sql users.sql
+        run-sql ${1:?}
     )
 }
 
 function db() {
     git clone git@github.com:oda-hub/frontend-drupal7-db-for-astrooda.git -b master drupal7-db-for-astrooda || (cd drupal7-db-for-astrooda; git checkout master; git pull)
-    run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
+    run-sql <(echo "USE astrooda;"; zcat drupal7-db-for-astrooda/mmoda_01.sql.gz)
+    #run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
 }
 
 function dump-db() {
@@ -106,14 +107,27 @@ function drush-cc() {
     drush 'cc all'
 }
 
-function drush-reinstall-base() {
+function drush-remove-base() {
         #~/.composer/vendor/bin/drush uninstall astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
-        ~/.composer/vendor/bin/drush pm-disable astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
-        ~/.composer/vendor/bin/drush pm-uninstall astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
-        ~/.composer/vendor/bin/drush en astrooda_spi_acs astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda -y
+        ~/.composer/vendor/bin/drush dis -y astrooda;
+        ~/.composer/vendor/bin/drush pmu -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs
         '
+        #~/.composer/vendor/bin/drush pm-disable astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
+        #~/.composer/vendor/bin/drush pm-uninstall astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
+        #~/.composer/vendor/bin/drush en astrooda_spi_acs astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda -y
+}
+
+function drush-install-base() {
+        #~/.composer/vendor/bin/drush uninstall astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
+        cd /var/www/astrooda; 
+        ~/.composer/vendor/bin/drush en -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs;
+        '
+        #~/.composer/vendor/bin/drush pm-disable astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
+        #~/.composer/vendor/bin/drush pm-uninstall astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda_spi_acs astrooda -y;
+        #~/.composer/vendor/bin/drush en astrooda_spi_acs astrooda_antares astrooda_isgri astrooda_jemx astrooda_magic astrooda_multiproduct astrooda_polar astrooda -y
 }
 
 function drush-reinstall() {
@@ -127,6 +141,8 @@ function drush-reinstall() {
 function drush-extensions() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
+        ~/.composer/vendor/bin/drush pm-disable astrooda_magic -y
+        ~/.composer/vendor/bin/drush pm-uninstall astrooda_magic -y
         ~/.composer/vendor/bin/drush dis astrooda_magic -y
         ~/.composer/vendor/bin/drush en astrooda_spi_acs -y
         '
