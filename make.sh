@@ -70,13 +70,13 @@ function db-users() {
 
 function db() {
     git clone git@github.com:oda-hub/frontend-drupal7-db-for-astrooda.git -b master drupal7-db-for-astrooda || (cd drupal7-db-for-astrooda; git checkout master; git pull)
-    run-sql <(echo "DROP DATABASE astrooda; CREATE DATABASE astrooda; USE astrooda;"; zcat drupal7-db-for-astrooda/mmoda_01.sql.gz)
+    run-sql <(echo "DROP DATABASE astrooda; CREATE DATABASE astrooda; USE astrooda;"; cat drupal7-db-for-astrooda/mmoda.sql)
     #run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
 }
 
 function dump-db() {
     # this all should be done in a k8s/job
-    out_sql=${1:?}
+    out_sql=${1:-$ODA_NAMESPACE-$(date +%y%m%d_%H%M).sql}
 
 
     kubectl port-forward svc/mysql 3307:3306 -n $ODA_NAMESPACE &
