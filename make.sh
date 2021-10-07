@@ -4,10 +4,15 @@ SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-c
 
 
 function mattermost() {
-    MESSAGE=${1:?}
+    channel=${1:?}
+    message=${2:-stdin}
+
+    if [ $message == "stdin" ]; then
+        message=$(cat)
+    fi
 
     curl -i -X POST -H 'Content-Type: application/json' \
-        -d '{"text": "'"${MESSAGE:?}"' :tada:"}' \
+        -d '{"channel": "'"$channel"'", "text": "'"${message:?}"' :tada:"}' \
         ${MATTERMOST_HOOK:?}        
 }
 
@@ -28,6 +33,12 @@ function create-secrets() {
 
 function upgrade() {
     set -x
+
+    (cd frontend-container; bash make.sh compute-version)
+
+    (echo -e "Deploying **$(pwd | xargs basename)** to $ODA_NAMESPACE:\n***\n"; cat frontend-container/version.yaml) | \
+        bash make.sh mattermost deployment-$ODA_NAMESPACE
+
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $SITE_VALUES \
          --set image.tag="$(cd frontend-container; bash make.sh compute-version)"  \
