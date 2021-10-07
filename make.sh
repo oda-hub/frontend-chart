@@ -2,6 +2,16 @@ ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 
 SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values)
 
+
+function mattermost() {
+    MESSAGE=${1:?}
+
+    curl -i -X POST -H 'Content-Type: application/json' \
+        -d '{"text": "'"${MESSAGE:?}"' :tada:"}' \
+        ${MATTERMOST_HOOK:?}        
+}
+
+
 function create-secrets() {
     kubectl -n ${ODA_NAMESPACE:?} delete secret frontend-settings-php
 
