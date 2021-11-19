@@ -46,5 +46,5 @@ spec:
   resources:
     requests:
       storage: 1G
-  storageClassName: vspherecsi
+  storageClassName: {{ .Values.storageClass | default "vspherecsi" }}
   volumeMode: Filesystem
