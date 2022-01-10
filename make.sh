@@ -209,7 +209,7 @@ function clone_container() {
     git clone git@github.com:oda-hub/frontend-container frontend-container || echo "can not clone, exists?"
     (cd frontend-container; git reset --hard ) | awk '{print "\033[32m"$0"\033[0m"}'
 
-    git clone git@github.com:oda-hub/postfix-container postfix-container
+    git clone https://github.com/oda-hub/postfix-container postfix-container
 }
 
 $@
