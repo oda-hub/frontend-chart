@@ -18,5 +18,4 @@ forward:
 
 container:
 	bash make.sh clone_container || echo "can not clone"
-	make -C frontend-container update
-	make -C frontend-container build
+	make -C frontend-container update build push
