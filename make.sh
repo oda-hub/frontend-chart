@@ -43,7 +43,7 @@ function upgrade() {
          --set image.tag="$(cat version-short.txt)"  \
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
     
-    (echo -e "Deployed **$(pwd | xargs basename)** to $ODA_NAMESPACE:\n***\n"; cat frontend-container/version.yaml) | \
+    (echo -e "Deployed **$(pwd | xargs basename)** to [$ODA_NAMESPACE](https://frontend-staging.obsuks1.unige.ch/mmoda/):\n***\n"; cat frontend-container/version.yaml) | \
         bash make.sh mattermost deployment-$ODA_NAMESPACE
 
 }
