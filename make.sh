@@ -186,13 +186,17 @@ function jwt_link_expiration() {
 
     echo -e "\033[32m was: \033[0m"
     run-sql <(echo "use astrooda; select * from variable where name='jwt_link_expiration';")
-    run-sql <(echo "use astrooda; update variable set value='s:4:\"20160\";' where name='jwt_link_expiration';")
+    run-sql <(echo "use astrooda; update variable set value='s:5:\"20160\";' where name='jwt_link_expiration';")
 
     drush-cc
 }
 
 function jwt_key_print() {
     run-sql <(echo "use astrooda; select * from variable where name='jwt_link_key';")
+}
+
+function swiftmailer_path_print() {
+    run-sql <(echo "use astrooda; select * from variable where name='swiftmailer_path';")
 }
 
 function jwt_key_update() {
