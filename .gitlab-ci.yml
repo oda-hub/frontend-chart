@@ -20,7 +20,8 @@ build:
     - make container
     - make push -C frontend-container
     - (cd frontend-container; bash make.sh compute-version) > version-short.txt
-    - cat frontend-container/version.yaml
+    - cp -fv frontend-container/version.yaml .
+    - cat version.yaml
   artifacts:
     untracked: true
   only:
@@ -36,6 +37,7 @@ deploy:
   before_script:
     - apk add git openssh make bash curl
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.astro.unige.ch/oda/site-config.git
+    - cp -fv version.yaml frontend-container/version.yaml
     - cp -fv site-config/frontend/values-unige-dstic-staging.yaml .
   script:
     - export ODA_NAMESPACE=oda-staging
