@@ -34,16 +34,18 @@ function create-secrets() {
 function upgrade() {
     set -x
 
-    (cd frontend-container; bash make.sh compute-version; cp frontend-container/version.yaml version-long) || \
+    (cd frontend-container; bash make.sh compute-version && cp frontend-container/version.yaml version-long.yaml) || \
         (echo "can not compute version, probably ok, will use:"; ls -l version-long)
-
-    (echo -e "Deploying **$(pwd | xargs basename)** to $ODA_NAMESPACE:\n***\n"; cat frontend-container/version.yaml) | \
-        bash make.sh mattermost deployment-$ODA_NAMESPACE
 
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $SITE_VALUES \
+         -w \
          --set image.tag="$(cd frontend-container; bash make.sh compute-version)"  \
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
+    
+    (echo -e "Deployed **$(pwd | xargs basename)** to $ODA_NAMESPACE:\n***\n"; cat frontend-container/version.yaml) | \
+        bash make.sh mattermost deployment-$ODA_NAMESPACE
+
 }
 
 function user() {
