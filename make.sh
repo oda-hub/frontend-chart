@@ -206,7 +206,7 @@ function jwt_configure() {
 
 function clone_container() {
     frontend_container_revision=$(cat frontend_container_revision.txt)
-    git clone git@github.com:oda-hub/frontend-container frontend-container || echo "can not clone, exists?"
+    git clone https://github.com/oda-hub/frontend-container frontend-container || echo "can not clone, exists?"
     (cd frontend-container; git reset --hard ) | awk '{print "\033[32m"$0"\033[0m"}'
 
     git clone https://github.com/oda-hub/postfix-container postfix-container
