@@ -14,3 +14,9 @@ db:
 
 forward:
 	bash make.sh forward
+
+
+container:
+	bash make.sh clone_container || echo "can not clone"
+	make -C frontend-container update
+	make -C frontend-container build

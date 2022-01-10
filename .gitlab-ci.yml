@@ -1,0 +1,44 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
+
+stages:
+  - build
+  - deploy
+
+build:
+  # Official docker image.
+  image: docker:stable
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - apk add git openssh make bash
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker info
+  script:
+    - make push -C frontend-container
+      #    - bash make.sh compute-version > version-long
+  artifacts:
+    untracked: true
+  only:
+    - master
+    - ci
+
+
+deploy:
+  image: alpine/helm
+  stage: deploy
+  dependencies: 
+    - build
+  before_script:
+    - apk add git openssh make bash curl
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.astro.unige.ch/oda/site-config.git
+    - cp -fv site-config/values-unige-dstic-staging.yaml .
+  script:
+    - export ODA_NAMESPACE=oda-staging
+    - export ODA_SITE=unige-dstic-staging
+    - bash make.sh upgrade 
+  only:
+    - master
+    - ci

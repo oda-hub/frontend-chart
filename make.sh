@@ -204,4 +204,9 @@ function jwt_configure() {
     jwt_key_update
 }
 
+function clone_container() {
+    git clone git@github.com:oda-hub/frontend-container frontend-container
+    git clone git@github.com:oda-hub/postfix-container postfix-container
+}
+
 $@
