@@ -135,14 +135,14 @@ function drush-remove-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
         ~/.composer/vendor/bin/drush dis -y astrooda;
-        ~/.composer/vendor/bin/drush pmu -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs
+        ~/.composer/vendor/bin/drush pmu -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw
         '
 }
 
 function drush-install-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
-        ~/.composer/vendor/bin/drush en -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs;
+        ~/.composer/vendor/bin/drush en -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw;
         '
 }
 
@@ -205,6 +205,14 @@ function jwt_key_update() {
 function jwt_configure() {
     jwt_link_expiration
     jwt_key_update
+}
+
+function swiftmailer_path_print() {
+    run-sql <(echo "use astrooda; select * from variable where name='swiftmailer_path';")
+}
+
+function swiftmailer_path_update() {
+    run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
 }
 
 function clone_container() {
