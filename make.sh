@@ -39,8 +39,8 @@ function upgrade() {
 
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $SITE_VALUES \
-         -w \
-         --set image.tag="$(cd frontend-container; bash make.sh compute-version)"  \
+         --wait \
+         --set image.tag="$(cat version-short.txt)"  \
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
     
     (echo -e "Deployed **$(pwd | xargs basename)** to $ODA_NAMESPACE:\n***\n"; cat frontend-container/version.yaml) | \
