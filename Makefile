@@ -24,3 +24,5 @@ container:
 update-container-rev:
 	(cd frontend-container; git rev-parse HEAD) > frontend_container_revision.txt
 
+
+update: update-container-rev container
