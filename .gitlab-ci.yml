@@ -13,10 +13,11 @@ build:
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   before_script:
-    - apk add git openssh make bash
+    - apk add git openssh make bash curl
     - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
     - docker info
   script:
+    - make container
     - make push -C frontend-container
       #    - bash make.sh compute-version > version-long
   artifacts:
