@@ -20,7 +20,7 @@ build:
     - make container
     - make push -C frontend-container
     - (cd frontend-container; bash make.sh compute-version) > version-short.txt
-    - cat version.yaml
+    - cat frontend-container/version.yaml
   artifacts:
     untracked: true
   only:
