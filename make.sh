@@ -34,7 +34,8 @@ function create-secrets() {
 function upgrade() {
     set -x
 
-    (cd frontend-container; bash make.sh compute-version)
+    (cd frontend-container; bash make.sh compute-version; cp frontend-container/version.yaml version-long) || \
+        (echo "can not compute version, probably ok, will use:"; ls -l version-long)
 
     (echo -e "Deploying **$(pwd | xargs basename)** to $ODA_NAMESPACE:\n***\n"; cat frontend-container/version.yaml) | \
         bash make.sh mattermost deployment-$ODA_NAMESPACE
