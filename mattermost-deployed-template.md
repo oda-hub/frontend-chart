@@ -4,7 +4,7 @@ Deployed **{{basename}}** to [{{oda_namespace}}](https://frontend-staging.obsuks
 
 **{{ revision.commit }}**: 
 
-{{ revision.diff }}
+{{ revision.message }}
 
 | component | branch / commit | 
 | :--: | :--: |

@@ -11,6 +11,7 @@ sys.stdout.write(jinja2.Template(open('mattermost-deployed-template.md').read())
     version=yaml.safe_load(open("frontend-container/version.yaml")),
     revision=dict(
         commit=subprocess.check_output(["git", "rev-parse", "HEAD"]).decode(),
-        diff=subprocess.check_output(["git", "show", "HEAD"]).decode()
+        diff=subprocess.check_output(["git", "show", "HEAD"]).decode(),
+        message=subprocess.check_output(["git", "log", "-1", "--pretty=%B"]).decode()
     )
 ))
