@@ -2,6 +2,10 @@ Deployed **{{basename}}** to [{{oda_namespace}}](https://frontend-staging.obsuks
 
 ***
 
+**{{ revision.commit }}**: 
+
+{{ revision.diff }}
+
 | component | branch / commit | 
 | :--: | :--: |
 {%- for k, v in version.items() -%} 
