@@ -36,7 +36,7 @@ deploy:
     - build
   before_script:
     - apk add git openssh make bash curl python3 py3-pip
-    - pip install --upgrade jinja2
+    - pip install --upgrade jinja2 yaml
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.astro.unige.ch/oda/site-config.git
     - cp -fv version.yaml frontend-container/version.yaml
     - cp -fv site-config/frontend/values-unige-dstic-staging.yaml .
