@@ -1,3 +1,5 @@
+set -xe
+
 ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 
 SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values)
@@ -32,7 +34,6 @@ function create-secrets() {
 }
 
 function upgrade() {
-    set -x
 
     (cd frontend-container; bash make.sh compute-version && cp frontend-container/version.yaml version.yaml) || \
         (echo "can not compute version, probably ok, will use:"; ls -l version.yaml)
