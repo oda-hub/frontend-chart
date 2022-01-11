@@ -12,7 +12,7 @@ function mattermost() {
     fi
 
     curl -i -X POST -H 'Content-Type: application/json' \
-        -d '{"channel": "'"$channel"'", "text": "'"${message:?}"' :tada:"}' \
+        -d '{"channel": "'"$channel"'", "text": "'"${message:?}"'"}' \
         ${MATTERMOST_HOOK:?}        
 }
 
