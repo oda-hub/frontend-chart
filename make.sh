@@ -224,7 +224,7 @@ function clone_container() {
 }
 
 function patch-resolver() {
-    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- sed -i 's@$local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@'  sites/all/modules/astrooda/astrooda.nameresolver.inc
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- sed -i 's@$local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@'  /var/www/astrooda/sites/all/modules/astrooda/astrooda.nameresolver.inc
 }
 
 $@
