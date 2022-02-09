@@ -1,0 +1,49 @@
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
+
+stages:
+  - build
+  - deploy
+
+build:
+  # Official docker image.
+  image: docker:stable
+  stage: build
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  before_script:
+    - apk add git openssh make bash curl
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+    - docker info
+  script:
+    - make container
+    - make push -C frontend-container
+    - (cd frontend-container; bash make.sh compute-version) > version-short.txt
+    - cp -fv frontend-container/version.yaml .
+    - cat version.yaml
+  artifacts:
+    untracked: true
+  only:
+    - master
+    - ci
+
+
+deploy:
+  image: alpine/helm
+  stage: deploy
+  dependencies: 
+    - build
+  before_script:
+    - apk add git openssh make bash curl python3 py3-pip
+    - pip install --upgrade jinja2 pyyaml
+    - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.astro.unige.ch/oda/site-config.git
+    - cp -fv version.yaml frontend-container/version.yaml
+    - cp -fv site-config/frontend/values-unige-dstic-staging.yaml .
+  script:
+    - export ODA_NAMESPACE=oda-staging
+    - export ODA_SITE=unige-dstic-staging
+    - bash make.sh upgrade 
+  only:
+    - master
+    - ci

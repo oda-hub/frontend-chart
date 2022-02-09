@@ -1,3 +1,5 @@
+set -xe
+
 ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 
 SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values)
@@ -12,7 +14,7 @@ function mattermost() {
     fi
 
     curl -i -X POST -H 'Content-Type: application/json' \
-        -d '{"channel": "'"$channel"'", "text": "'"${message:?}"' :tada:"}' \
+        -d '{"channel": "'"$channel"'", "text": "'"${message:?}"'"}' \
         ${MATTERMOST_HOOK:?}        
 }
 
@@ -32,17 +34,18 @@ function create-secrets() {
 }
 
 function upgrade() {
-    set -x
 
-    (cd frontend-container; bash make.sh compute-version)
-
-    (echo -e "Deploying **$(pwd | xargs basename)** to $ODA_NAMESPACE:\n***\n"; cat frontend-container/version.yaml) | \
-        bash make.sh mattermost deployment-$ODA_NAMESPACE
+    (cd frontend-container; bash make.sh compute-version && cp version.yaml ../version.yaml) || \
+        (echo "can not compute version, probably ok, will use:"; ls -l version.yaml)
 
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $SITE_VALUES \
-         --set image.tag="$(cd frontend-container; bash make.sh compute-version)"  \
+         --wait \
+         --set image.tag="$(cat version-short.txt)"  \
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
+    
+    python3 template.py | bash make.sh mattermost deployment-$ODA_NAMESPACE
+
 }
 
 function user() {
@@ -132,14 +135,14 @@ function drush-remove-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
         ~/.composer/vendor/bin/drush dis -y astrooda;
-        ~/.composer/vendor/bin/drush pmu -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs
+        ~/.composer/vendor/bin/drush pmu -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw
         '
 }
 
 function drush-install-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
-        ~/.composer/vendor/bin/drush en -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs;
+        ~/.composer/vendor/bin/drush en -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw;
         '
 }
 
@@ -206,6 +209,26 @@ function jwt_key_update() {
 function jwt_configure() {
     jwt_link_expiration
     jwt_key_update
+}
+
+function swiftmailer_path_print() {
+    run-sql <(echo "use astrooda; select * from variable where name='swiftmailer_path';")
+}
+
+function swiftmailer_path_update() {
+    run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
+}
+
+function clone_container() {
+    frontend_container_revision=$(cat frontend_container_revision.txt)
+    git clone https://github.com/oda-hub/frontend-container frontend-container || echo "can not clone, exists?"
+    (cd frontend-container; git reset --hard ) | awk '{print "\033[32m"$0"\033[0m"}'
+
+    git clone https://github.com/oda-hub/postfix-container postfix-container
+}
+
+function patch-resolver() {
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- sed -i 's@$local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@'  /var/www/astrooda/sites/all/modules/astrooda/astrooda.nameresolver.inc
 }
 
 $@
