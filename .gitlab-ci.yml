@@ -35,8 +35,10 @@ deploy:
   dependencies: 
     - build
   before_script:
-    - apk add git openssh make bash curl python3 py3-pip kubectl
+    - apk add git openssh make bash curl python3 py3-pip
     - pip install --upgrade jinja2 pyyaml
+    - curl -o /usr/bin/kubectl -L "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/stable.txt)/bin/linux/amd64/kubectl"
+    - chmod +x /usr/bin/kubectl
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.astro.unige.ch/oda/site-config.git
     - cp -fv version.yaml frontend-container/version.yaml
     - cp -fv site-config/frontend/values-unige-dstic-staging.yaml .
