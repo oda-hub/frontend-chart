@@ -35,7 +35,7 @@ deploy:
   dependencies: 
     - build
   before_script:
-    - apk add git openssh make bash curl python3 py3-pip
+    - apk add git openssh make bash curl python3 py3-pip kubectl
     - pip install --upgrade jinja2 pyyaml
     - git clone https://gitlab-ci-token:${CI_JOB_TOKEN}@gitlab.astro.unige.ch/oda/site-config.git
     - cp -fv version.yaml frontend-container/version.yaml
