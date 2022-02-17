@@ -43,6 +43,9 @@ function upgrade() {
          --wait \
          --set image.tag="$(cat version-short.txt)"  \
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
+
+    bash make.sh patch-resolver
+    bash make.sh drush-cc
     
     python3 template.py | bash make.sh mattermost deployment-$ODA_NAMESPACE
 
