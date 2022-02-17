@@ -1,0 +1,16 @@
+astrooda:
+ url: https://github.com/oda-hub/frontend-astrooda
+ branch: master
+ commit: 1bc60b97
+drupal7-for-astrooda:
+ url: https://github.com/oda-hub/frontend-drupal7-for-astrooda
+ branch: master
+ commit: v-21.10.0000-1-g54c6cc0f
+bootstrap_astrooda:
+ url: https://github.com/oda-hub/frontend-bootstrap_astrooda
+ branch: master
+ commit: v-21.10.0000-3-gb2281edc
+frontend-container:
+ url: git@github.com:oda-hub/frontend-container
+ branch: master
+ commit: v-21.10.0000-5-ga3b13af9
