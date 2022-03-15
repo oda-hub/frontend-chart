@@ -34,6 +34,7 @@ function create-secrets() {
 }
 
 function upgrade() {
+    (cd frontend-container; bash make.sh compute-version) > version-short.txt
 
     (cd frontend-container; bash make.sh compute-version && cp version.yaml ../version.yaml) || \
         (echo "can not compute version, probably ok, will use:"; ls -l version.yaml)
@@ -135,18 +136,23 @@ function drush-cc() {
     drush 'cc all'
 }
 
+MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs"
+#MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw"
+
 function drush-remove-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
         ~/.composer/vendor/bin/drush dis -y astrooda;
-        ~/.composer/vendor/bin/drush pmu -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw
+        ~/.composer/vendor/bin/drush pmu -y '"$MODULE_LIST"'
         '
 }
+
+
 
 function drush-install-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/astrooda; 
-        ~/.composer/vendor/bin/drush en -y astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw;
+        ~/.composer/vendor/bin/drush en -y '"$MODULE_LIST"';
         '
 }
 

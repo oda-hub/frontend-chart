@@ -39,10 +39,10 @@ spec:
       - name: frontend-settings-php
         secret:
           secretName: frontend-settings-php
-      {{ if .Values.dev_space_volume.enabled }}
-      - name: frontend-dev
-        {{- toYaml .Values.dev_space_volume.volume | nindent 8 }}
-      {{ end }}
+          #{{ if .Values.dev_space_volume.enabled }}
+          #      - name: frontend-dev
+          #        {{- toYaml .Values.dev_space_volume.volume | nindent 8 }}
+          #      {{ end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
