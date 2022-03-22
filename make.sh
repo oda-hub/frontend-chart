@@ -4,6 +4,9 @@ ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 
 SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values)
 
+export MODULE_LIST="$(< values-unige-dstic-staging.yaml awk -F: '/module_list/ {print $2}')"
+#MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs"
+#MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw"
 
 function mattermost() {
     channel=${1:?}
@@ -34,10 +37,9 @@ function create-secrets() {
 }
 
 function upgrade() {
-    (cd frontend-container; bash make.sh compute-version) > version-short.txt
-
-    (cd frontend-container; bash make.sh compute-version && cp version.yaml ../version.yaml) || \
+    (cd frontend-container; bash make.sh compute-version > version-short.txt && cp version.yaml ../version.yaml) || \
         (echo "can not compute version, probably ok, will use:"; ls -l version.yaml)
+
 
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $SITE_VALUES \
@@ -140,8 +142,6 @@ function drush-cc() {
     drush 'cc all'
 }
 
-echo ${MODULE_LIST:="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs"}
-#MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw"
 
 function drush-remove-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
