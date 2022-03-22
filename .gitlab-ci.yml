@@ -46,7 +46,7 @@ deploy:
     - export ODA_NAMESPACE=oda-staging
     - export ODA_SITE=unige-dstic-staging
     - ls -lR
-    - bash make.sh clone_container && bash make.sh upgrade 
+    - bash make.sh upgrade 
   only:
     - master
     - ci

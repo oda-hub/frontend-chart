@@ -34,9 +34,7 @@ function create-secrets() {
 }
 
 function upgrade() {
-    (cd frontend-container; bash make.sh compute-version) > version-short.txt
-
-    (cd frontend-container; bash make.sh compute-version && cp version.yaml ../version.yaml) || \
+    (cd frontend-container; bash make.sh compute-version > version-short.txt && cp version.yaml ../version.yaml) || \
         (echo "can not compute version, probably ok, will use:"; ls -l version.yaml)
 
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
