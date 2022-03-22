@@ -132,11 +132,15 @@ function frontend-default-files() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cp -rfv /frontend-default-files/* /var/www/astrooda/sites/default/files/'
 }
 
+function frontend-files-permissions() {
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE   -- chmod -R 777 /var/www/astrooda/sites/default/files
+}
+
 function drush-cc() {
     drush 'cc all'
 }
 
-MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs"
+echo ${MODULE_LIST:="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs"}
 #MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw"
 
 function drush-remove-all() {
@@ -159,6 +163,9 @@ function drush-install-all() {
 function drush-reinstall-all() {
     drush-remove-all
     drush-install-all
+
+    frontend-files-permissions
+    patch-resolver
 }
 
 function drush-extensions() {

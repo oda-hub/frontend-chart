@@ -43,8 +43,10 @@ metadata:
 spec:
   accessModes:
   - ReadWriteOnce
+  #- ReadWriteMany
   resources:
     requests:
       storage: 1G
-  storageClassName: {{ .Values.storageClass | default "vspherecsi" }}
-  volumeMode: Filesystem
+  storageClassName: {{ .Values.storage_class }}
+  #storageClassName: {{ .Values.storage_class_rwmany }}
+  #volumeMode: Filesystem

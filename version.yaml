@@ -1,15 +1,15 @@
 astrooda:
  url: git@github.com:oda-hub/frontend-astrooda
- branch: (HEAD
+ branch: master
  commit: v-21.10.0002
 drupal7-for-astrooda:
  url: git@github.com:oda-hub/frontend-drupal7-for-astrooda.git
  branch: master
- commit: v-21.10.0000-1-g54c6cc0f
+ commit: v-21.10.0000
 bootstrap_astrooda:
  url: git@github.com:oda-hub/frontend-bootstrap_astrooda
- branch: (HEAD
- commit: v-21.10.0000
+ branch: master
+ commit: v-21.10.0000-3-gb2281edc
 frontend-container:
  url: git@github.com:oda-hub/frontend-container
  branch: master

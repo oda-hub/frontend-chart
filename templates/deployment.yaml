@@ -25,14 +25,11 @@ spec:
       serviceAccountName: {{ template "chart.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      priorityClassName: high-priority
       volumes:
       - name: frontend-config-volume 
         configMap:
           name: frontend-config
-      - name: filelogdir
-        hostPath:
-          path: /scratch/workers/oda/frontend-logs
-          type: DirectoryOrCreate
       - name: frontend-files
         persistentVolumeClaim:
           claimName: frontend-files
@@ -73,8 +70,6 @@ spec:
             {{- toYaml .Values.resources | nindent 12 }}
           #env:
           volumeMounts:
-          - mountPath: /var/log/containers
-            name: filelogdir
           - name: frontend-config-volume
             mountPath: /etc/apache2/sites-enabled/default-ssl.conf
             subPath: etc-apache2-site-ssl.conf
