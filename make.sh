@@ -37,6 +37,8 @@ function upgrade() {
     (cd frontend-container; bash make.sh compute-version > version-short.txt && cp version.yaml ../version.yaml) || \
         (echo "can not compute version, probably ok, will use:"; ls -l version.yaml)
 
+    export MODULE_LIST="$(< frontend/values-unige-dstic-staging.yaml awk -F: '/module_list/ {print $2}')"
+
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $SITE_VALUES \
          --wait \
