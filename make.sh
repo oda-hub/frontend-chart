@@ -5,8 +5,8 @@ ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 SITE_VALUES=$(bash <(curl https://raw.githubusercontent.com/oda-hub/dispatcher-chart/master/make.sh) site-values)
 
 export MODULE_LIST="$(< values-unige-dstic-staging.yaml awk -F: '/module_list/ {print $2}')"
-#MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs"
-#MODULE_LIST="astrooda_antares astrooda_isgri astrooda_jemx astrooda_polar astrooda_spi_acs astrooda_legacysurvey astrooda_gw"
+#MODULE_LIST="mmoda_antares mmoda_isgri mmoda_jemx mmoda_polar mmoda_spi_acs"
+#MODULE_LIST="mmoda_antares mmoda_isgri mmoda_jemx mmoda_polar mmoda_spi_acs mmoda_legacysurvey mmoda_gw"
 
 function mattermost() {
     channel=${1:?}
@@ -29,7 +29,7 @@ function create-secrets() {
         # yet another templating level, not ideal
         rm -fv private/drupal7_sites_default_settings.php
         umask 0066
-        PASSWORD=$(cat private/astrooda-user) j2 -f yaml config/drupal7_sites_default_settings.php.template $SITE_VALUES -e env > private/drupal7_sites_default_settings.php
+        PASSWORD=$(cat private/mmoda-user) j2 -f yaml config/drupal7_sites_default_settings.php.template $SITE_VALUES -e env > private/drupal7_sites_default_settings.php
     )
    
 
@@ -59,7 +59,7 @@ function user() {
     (
       mkdir -p private
       umask 0066
-      openssl rand -base64  16 >  private/astrooda-user
+      openssl rand -base64  16 >  private/mmoda-user
     )
 }
 
@@ -85,9 +85,9 @@ function run-sql() {
 function db-user() {
     (
         umask 0066
-        rm -fv private/astrooda-user.sql
-        PASSWORD=$(cat private/astrooda-user) j2 config/astrooda-user.sql.template -e PASSWORD  > private/astrooda-user.sql
-        run-sql private/astrooda-user.sql
+        rm -fv private/mmoda-user.sql
+        PASSWORD=$(cat private/mmoda-user) j2 config/mmoda-user.sql.template -e PASSWORD  > private/mmoda-user.sql
+        run-sql private/mmoda-user.sql
     )
 }
 
@@ -100,9 +100,9 @@ function db-users() {
 }
 
 function db() {
-    git clone git@github.com:oda-hub/frontend-drupal7-db-for-astrooda.git -b master drupal7-db-for-astrooda || (cd drupal7-db-for-astrooda; git checkout master; git pull)
-    run-sql <(echo "DROP DATABASE astrooda; CREATE DATABASE astrooda; USE astrooda;"; cat drupal7-db-for-astrooda/mmoda.sql)
-    #run-sql <(echo "USE astrooda;"; cat drupal7-db-for-astrooda/drupal7-db-for-astrooda.sql)
+    git clone git@github.com:oda-hub/mmoda-frontend-db.git -b master mmoda-frontend-db; git checkout master; git pull)
+    run-sql <(echo "DROP DATABASE mmoda; CREATE DATABASE mmoda; USE mmoda;"; cat mmoda-frontend-db/mmoda.sql)
+    #run-sql <(echo "USE mmoda;"; cat mmoda-frontend-db/mmoda.sql)
 }
 
 function dump-db() {
@@ -117,7 +117,7 @@ function dump-db() {
 
     MYSQL_ROOT_PASSWORD=$(kubectl get secret --namespace $ODA_NAMESPACE mysql -o jsonpath="{.data.mysql-root-password}" | base64 --decode; echo)
 
-    mysqldump --protocol=tcp -h 127.0.0.1 -P3307 -u root -p${MYSQL_ROOT_PASSWORD} astrooda > $out_sql
+    mysqldump --protocol=tcp -h 127.0.0.1 -P3307 -u root -p${MYSQL_ROOT_PASSWORD} mmoda > $out_sql
 
     kill -9 $proxy
 }
@@ -127,15 +127,15 @@ function forward() {
 }
 
 function drush() {
-    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush '"${@}"
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/mmoda; ~/.composer/vendor/bin/drush '"${@}"
 }
  
 function frontend-default-files() {
-    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cp -rfv /frontend-default-files/* /var/www/astrooda/sites/default/files/'
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cp -rfv /frontend-default-files/* /var/www/mmoda/sites/default/files/'
 }
 
 function frontend-files-permissions() {
-    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE   -- chmod -R 777 /var/www/astrooda/sites/default/files
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE   -- chmod -R 777 /var/www/mmoda/sites/default/files
 }
 
 function drush-cc() {
@@ -145,8 +145,8 @@ function drush-cc() {
 
 function drush-remove-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
-        cd /var/www/astrooda; 
-        ~/.composer/vendor/bin/drush dis -y astrooda;
+        cd /var/www/mmoda; 
+        ~/.composer/vendor/bin/drush dis -y mmoda;
         ~/.composer/vendor/bin/drush pmu -y '"$MODULE_LIST"'
         '
 }
@@ -155,7 +155,7 @@ function drush-remove-all() {
 
 function drush-install-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
-        cd /var/www/astrooda; 
+        cd /var/www/mmoda; 
         ~/.composer/vendor/bin/drush en -y '"$MODULE_LIST"';
         '
 }
@@ -170,11 +170,11 @@ function drush-reinstall-all() {
 
 function drush-extensions() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
-        cd /var/www/astrooda; 
-        ~/.composer/vendor/bin/drush pm-disable astrooda_magic -y
-        ~/.composer/vendor/bin/drush pm-uninstall astrooda_magic -y
-        ~/.composer/vendor/bin/drush dis astrooda_magic -y
-        ~/.composer/vendor/bin/drush en astrooda_spi_acs -y
+        cd /var/www/mmoda; 
+        ~/.composer/vendor/bin/drush pm-disable mmoda_magic -y
+        ~/.composer/vendor/bin/drush pm-uninstall mmoda_magic -y
+        ~/.composer/vendor/bin/drush dis mmoda_magic -y
+        ~/.composer/vendor/bin/drush en mmoda_spi_acs -y
         '
 }
 
@@ -184,7 +184,7 @@ function reset-drupal-admin() {
         rm -fv private/drupal-admin
         openssl rand -base64 32 > private/drupal-admin
     )
-    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/astrooda; ~/.composer/vendor/bin/drush upwd --password="'$(cat private/drupal-admin)'" sitamin'
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c 'cd /var/www/mmoda; ~/.composer/vendor/bin/drush upwd --password="'$(cat private/drupal-admin)'" sitamin'
 }
 
 function update_news() {
@@ -205,22 +205,22 @@ function jwt_link_expiration() {
     # this should be really in a Job and value derived from chart values
 
     echo -e "\033[32m was: \033[0m"
-    run-sql <(echo "use astrooda; select * from variable where name='jwt_link_expiration';")
-    run-sql <(echo "use astrooda; update variable set value='s:5:\"20160\";' where name='jwt_link_expiration';")
+    run-sql <(echo "use mmoda; select * from variable where name='jwt_link_expiration';")
+    run-sql <(echo "use mmoda; update variable set value='s:5:\"20160\";' where name='jwt_link_expiration';")
 
     drush-cc
 }
 
 function jwt_key_print() {
-    run-sql <(echo "use astrooda; select * from variable where name='jwt_link_key';")
+    run-sql <(echo "use mmoda; select * from variable where name='jwt_link_key';")
 }
 
 function swiftmailer_path_print() {
-    run-sql <(echo "use astrooda; select * from variable where name='swiftmailer_path';")
+    run-sql <(echo "use mmoda; select * from variable where name='swiftmailer_path';")
 }
 
 function jwt_key_update() {
-    run-sql <(echo "use astrooda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":\""$(cat private/jwt-key | xargs)"\";' where name='jwt_link_key';")
+    run-sql <(echo "use mmoda; update variable set value='s:"$(< private/jwt-key wc -c | awk '{print $1-1}')":\""$(cat private/jwt-key | xargs)"\";' where name='jwt_link_key';")
 }
 
 function jwt_configure() {
@@ -229,11 +229,11 @@ function jwt_configure() {
 }
 
 function swiftmailer_path_print() {
-    run-sql <(echo "use astrooda; select * from variable where name='swiftmailer_path';")
+    run-sql <(echo "use mmoda; select * from variable where name='swiftmailer_path';")
 }
 
 function swiftmailer_path_update() {
-    run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
+    run-sql <(echo "use mmoda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
 }
 
 function clone_container() {
@@ -245,7 +245,7 @@ function clone_container() {
 }
 
 function patch-resolver() {
-    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- sed -i 's@$local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@'  /var/www/astrooda/sites/all/modules/astrooda/astrooda.nameresolver.inc
+    kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- sed -i 's@$local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@'  /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc
 }
 
 $@

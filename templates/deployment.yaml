@@ -52,7 +52,7 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: {{ .Values.astrooda_prefix }}
+              path: {{ .Values.mmoda_prefix }}
               port: http
             failureThreshold: 5
             initialDelaySeconds: 15
@@ -60,7 +60,7 @@ spec:
             timeoutSeconds: 30
           readinessProbe:
             httpGet:
-              path: {{ .Values.astrooda_prefix }}
+              path: {{ .Values.mmoda_prefix }}
               port: http
             failureThreshold: 3
             initialDelaySeconds: 5
@@ -79,16 +79,16 @@ spec:
             subPath: etc-apache2.conf
             readOnly: true
           - name: frontend-settings-php
-            mountPath: /var/www/astrooda/sites/default/settings.php
+            mountPath: /var/www/mmoda/sites/default/settings.php
             subPath: drupal7_sites_default_settings.php
             readOnly: true                
           - name: frontend-files
-            mountPath: /var/www/astrooda/sites/default/files
+            mountPath: /var/www/mmoda/sites/default/files
             readOnly: false
-            #mountPath: /var/www/astrooda/sites/default/files/ctools
+            #mountPath: /var/www/mmoda/sites/default/files/ctools
           {{ if .Values.dev_space_volume.enabled }}
           - name: frontend-dev
-            mountPath: /var/www/astrooda/dev
+            mountPath: /var/www/mmoda/dev
             subPath: {{ .Values.dev_space_volume.subPath }}
             readOnly: true                
           {{ end }}

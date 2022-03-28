@@ -9,7 +9,7 @@ data:
     <VirtualHost _default_:443>
         ServerAdmin webmaster@localhost
 
-        DocumentRoot /var/www/astrooda
+        DocumentRoot /var/www/mmoda
 
         # Available loglevels: trace8, ..., trace1, debug, info, notice, warn,
         # error, crit, alert, emerg.
@@ -319,7 +319,7 @@ data:
             SSLProxyEngine on
 
             ProxyPass /dispatch-data/   http://oda-dispatcher:8000/ retry=0 connectiontimeout=3600 timeout=3600 
-            ProxyPass /astrooda/dispatch-data/   http://oda-dispatcher:8000/ retry=0 connectiontimeout=3600 timeout=3600
+            ProxyPass /mmoda/dispatch-data/   http://oda-dispatcher:8000/ retry=0 connectiontimeout=3600 timeout=3600
 
             ProxyPass /mmoda/dispatch-data/gw/timesystem/   https://integral-timesystem.obsuks1.unige.ch/ connectiontimeout=3600 timeout=3600
             ProxyPass /mmoda/dispatch-data/gw/integralhk/   https://integralhk.obsuks1.unige.ch/ connectiontimeout=3600 timeout=3600
@@ -330,13 +330,13 @@ data:
             ProxyPass /cdci/astrooda/dispatch-data/gw/odakb   https://fuseki.obsuks1.unige.ch/dataanalysis connectiontimeout=3600 timeout=3600
             ProxyPass /mmoda/dispatch-data/gw/odakb   https://fuseki.obsuks1.unige.ch/dataanalysis connectiontimeout=3600 timeout=3600
 
-            ProxyPass {{ .Values.astrooda_prefix }}/dispatch-data/   http://oda-dispatcher:8000/ connectiontimeout=3600 timeout=3600
+            ProxyPass {{ .Values.mmoda_prefix }}/dispatch-data/   http://oda-dispatcher:8000/ connectiontimeout=3600 timeout=3600
 
 
-            Alias "{{ .Values.astrooda_prefix }}" "/var/www/astrooda"
-            #Alias "/astrooda" "/var/www/astrooda"
+            Alias "{{ .Values.mmoda_prefix }}" "/var/www/mmoda"
+            #Alias "/mmoda" "/var/www/mmoda"
 
-            <Directory "/var/www/astrooda">
+            <Directory "/var/www/mmoda">
               Options Indexes FollowSymLinks
               AllowOverride All
               Require all granted

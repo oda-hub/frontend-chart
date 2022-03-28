@@ -1,5 +1,6 @@
 frontend-container
 private
 drupal7-db-for-astrooda
+mmoda-frontend-db
 values-unige-dstic.yaml
 values-*.yaml

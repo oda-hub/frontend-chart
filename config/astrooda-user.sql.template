@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS astrooda;
+CREATE DATABASE IF NOT EXISTS mmoda;
 
-DROP USER  IF EXISTS 'astrooda'@'%';
-CREATE USER 'astrooda'@'%'  IDENTIFIED BY '{{PASSWORD}}';
+DROP USER  IF EXISTS 'mmoda'@'%';
+CREATE USER 'mmoda'@'%'  IDENTIFIED BY '{{PASSWORD}}';
 
-GRANT ALL PRIVILEGES ON astrooda.* TO 'astrooda'@'%';
+GRANT ALL PRIVILEGES ON mmoda.* TO 'mmoda'@'%';

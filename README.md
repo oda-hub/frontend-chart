@@ -5,13 +5,13 @@
   * secrets are initialzied at deployment. 
 
 * Frontend [container](https://github.com/oda-hub/frontend-container) consists of the following components, and builds them with default make target:
-  * an adapted [drupal](https://github.com/oda-hub/frontend-drupal7-for-astrooda) instance
-  * with an [astrooda](https://github.com/oda-hub/frontend-astrooda) module
-  * [bootstrap for astrooda](https://github.com/oda-hub/frontend-bootstrap_astrooda)
+  * an adapted [drupal](https://github.com/oda-hub/mmoda-frontend-drupal) instance
+  * with an [mmoda](https://github.com/oda-hub/mmoda-frontend-module) module
+  * [bootstrap for mmoda](https://github.com/oda-hub/mmoda-frontend-theme)
   * [setttings.php.template]() is delivered instead of settings.php, which may contain private data. It is filled in on deployment with information.
   
 * Database:
-  * [drupal database snapshot](https://github.com/oda-hub/frontend-drupal7-db-for-astrooda) as released 
+  * [drupal database snapshot](https://github.com/oda-hub/mmoda-frontend-db) as released 
   * database also contains help pages, as released with the given version. [Astrooda help pages](https://github.com/oda-hub/astrooda-help-pages) can be edited on dev instance of drupal, and stored in database snapshot on release.
   * user accounts recreated on deployment. backed-up and maintainer during service upgrades.
   
@@ -21,7 +21,7 @@
 
 Please beware:
 
-*  The resulting page served under /cdci/astrooda/
+*  The resulting page served under /mmoda
 *  If there is a problem with opening the frontend, manual changes to drupal7_sites_default_settings.php.template may be needed: at least base_url and reverse_proxy_addresses
 *  With every change, it will be necessary to do `drush cc` - see in make.sh.
   
