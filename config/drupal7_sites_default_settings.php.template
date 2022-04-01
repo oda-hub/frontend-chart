@@ -306,7 +306,7 @@ $drupal_hash_salt = '';
  * for you.
  */
 
-$base_url = '{{ astrooda_base_url }}';  // NO trailing slash!
+$base_url = '{{ mmoda_base_url }}';  // NO trailing slash!
 
 /**
  * PHP settings:
