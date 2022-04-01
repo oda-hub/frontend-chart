@@ -1,4 +1,4 @@
-set -xe
+set -e
 
 ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 
@@ -217,6 +217,10 @@ function jwt_key_print() {
 
 function swiftmailer_path_print() {
     run-sql <(echo "use astrooda; select * from variable where name='swiftmailer_path';")
+}
+
+function ckeditor_path_print() {
+    run-sql <(echo "use astrooda; select * from ckeditor_settings;")
 }
 
 function jwt_key_update() {
