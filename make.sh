@@ -1,4 +1,4 @@
-set -e
+set -ex
 
 ODA_NAMESPACE=${ODA_NAMESPACE:-$ODA_NAMESPACE}
 
@@ -35,7 +35,7 @@ function create-secrets() {
 }
 
 function upgrade() {
-    (cd frontend-container; bash make.sh compute-version > version-short.txt && cp version.yaml ../version.yaml) || \
+    (cd frontend-container; bash make.sh compute-version > version-short.txt && cp -fv version.yaml version-short.txt ../) || \
         (echo "can not compute version, probably ok, will use:"; ls -l version.yaml)
 
 
@@ -146,7 +146,8 @@ function drush-remove-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/mmoda; 
         ~/.composer/vendor/bin/drush dis -y mmoda;
-        ~/.composer/vendor/bin/drush pmu -y '"$MODULE_LIST"'
+        ~/.composer/vendor/bin/drush pm-uninstall -y '"$MODULE_LIST"'
+        ~/.composer/vendor/bin/drush pm-uninstall -y mmoda;
         '
 }
 
@@ -155,6 +156,7 @@ function drush-remove-all() {
 function drush-install-all() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- bash -c '
         cd /var/www/mmoda; 
+        ~/.composer/vendor/bin/drush en -y mmoda;
         ~/.composer/vendor/bin/drush en -y '"$MODULE_LIST"';
         '
 }
