@@ -46,6 +46,7 @@ function upgrade() {
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
 
     bash make.sh patch-resolver
+    bash make.sh frontend-files-permissions
     bash make.sh drush-reinstall-all
     bash make.sh drush-cc
     
