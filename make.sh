@@ -21,7 +21,7 @@ function mattermost() {
 
 
 function create-secrets() {
-    kubectl -n ${ODA_NAMESPACE:?} delete secret frontend-settings-php
+    kubectl -n ${ODA_NAMESPACE:?} delete secret frontend-settings-php || true
 
     (
         # yet another templating level, not ideal
@@ -251,6 +251,15 @@ function clone_container() {
 
 function patch-resolver() {
     kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- sed -i 's@$local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@'  /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc
+}
+
+#modules/astrooda/instruments/astrooda_jemx/astrooda_jemx.inc:      'OSA11.2-beta' => 'OSA11.2-beta'
+
+function patch-osa112() {
+    for ins in jemx isgri; do
+        kubectl exec -it deployments/oda-frontend -n $ODA_NAMESPACE -- sed -i "s@'OSA11.1' => 'OSA11.1',@@; s@OSA11.2-beta@OSA11.2@g"  \
+                /var/www/astrooda/sites/all/modules/astrooda/instruments/astrooda_${ins}/astrooda_${ins}.inc
+    done
 }
 
 $@
