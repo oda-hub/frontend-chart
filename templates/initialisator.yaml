@@ -1,0 +1,58 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: frontend-init-script
+  namespace: {{ .Values.environment }}
+data:
+  init-script.sh: |
+    #!/bin/bash
+    apt-get install -y j2
+
+    # Install jq if not available
+    JQ_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
+    JQ_BIN=/usr/local/bin/jq
+    which jq 2>&1 > /dev/null || { sudo curl -sfL $JQ_URL -o $JQ_BIN && sudo chmod +x $JQ_BIN ; }
+
+    # Generate settings.php from template
+    cd /patched-files
+    wget https://github.com/oda-hub/frontend-chart/blob/master/config/drupal7_sites_default_settings.php.template
+    echo "{ \"mmoda_prefix\": \"${MMODA_PREFIX}\" }" | j2 -f json drupal7_sites_default_settings.php.template -e env > settings.php
+    cp settings.php /var/www/mmoda/sites/default/settings.php
+    cp /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc .
+    sed -i 's@$local_name_resolver_url = "http://cdcihn/tnr-1.2/api/v1.1/byname/";@$local_name_resolver_url = "{{ .Values.resolver_endpoint }}";@'  mmoda.nameresolver.inc
+    
+    cp -rfv /frontend-default-files/* /var/www/mmoda/sites/default/files
+
+    [ -d /instruments-dir ] && cp -rfv /var/www/mmoda/sites/all/modules/mmoda/instruments/* /instruments-dir
+
+    # Drush reinstall all mmoda modules
+    cd /var/www/mmoda 
+    ALL_MMODA_MODULES=`~/.composer/vendor/bin/drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
+    ~/.composer/vendor/bin/drush dis -y mmoda 
+    ~/.composer/vendor/bin/drush pm-uninstall -y $ALL_MMODA_MODULES
+    ~/.composer/vendor/bin/drush pm-uninstall -y mmoda
+    ~/.composer/vendor/bin/drush en -y mmoda 
+    ~/.composer/vendor/bin/drush en -y $MMODA_MODULES
+ 
+
+    chmod -R 777 /frontend-files
+
+    #reset drupal admin
+    ~/.composer/vendor/bin/drush upwd --password=$DRUPAL_PW sitamin
+
+    function run-sql() {
+        mysql --protocol=tcp -h mysql -P3307 -u astrooda -p$PASSWORD astrooda  
+    }
+
+    run-sql <(echo "update variable set value='s:"$(echo -n $JWT_EXPIRATION | wc -c)":\"${JWT_EXPIRATION}\";' where name='jwt_link_expiration';")
+    run-sql <(echo "update variable set value='s:"$(echo -n $JWT_KEY | wc -c)":\"${JWT_KEY}\";' where name='jwt_link_key';")
+    run-sql <(echo "update variable set value='s:"$(echo -n $JWT_URL | wc -c)":\"${JWT_URL}\";' where name='jwt_link_key';")
+
+    run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
+
+    ~/.composer/vendor/bin/drush cc -y all 
+
+
+
+    
+
