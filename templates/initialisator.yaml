@@ -15,7 +15,7 @@ data:
     # Generate settings.php from template
     cd /patched-files
     curl https://raw.githubusercontent.com/oda-hub/frontend-chart/master/config/drupal7_sites_default_settings.php.template -o settings.php
-    sed -i "s/{{ "{{" }} mmoda_base_url {{ "}}" }}/${MMODA_BASE_URL}/" settings.php
+    sed -i "s@{{ "{{" }} mmoda_base_url {{ "}}" }}@${MMODA_BASE_URL}@" settings.php
     sed -i "s/{{ "{{" }}env.PASSWORD{{ "}}" }}/${PASSWORD}/" settings.php
     cp settings.php /var/www/mmoda/sites/default/settings.php
     cp /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc .
@@ -27,7 +27,7 @@ data:
 
     # wait db
     function run-sql() {
-        mysql --protocol=tcp -h mysql -P3307 -u astrooda -p$PASSWORD astrooda < ${1:?}
+        mysql -h mysql -u astrooda -p$PASSWORD astrooda < ${1:?}
     }
     while ! run-sql <(echo ";") ; do 
         sleep 10
@@ -43,7 +43,7 @@ data:
     ~/.composer/vendor/bin/drush en -y $MMODA_MODULES
  
 
-    chmod -R 777 /frontend-files
+    chmod -R 777 /frontend-files 
 
     #reset drupal admin
     ~/.composer/vendor/bin/drush upwd --password=$DRUPAL_PW sitamin
