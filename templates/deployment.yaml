@@ -73,8 +73,8 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.mysql_pw_secret }}
                   key: mysql-password
-            - name: MMODA_PREFIX
-              value: {{ .Values.mmoda_prefix }}
+            - name: MMODA_BASE_URL
+              value: {{ .Values.mmoda_base_url }}
             - name: MMODA_MODULES
               value: {{ join "," .Values.static_modules }}
             - name: DRUPAL_PW
