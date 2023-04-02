@@ -27,7 +27,7 @@ data:
 
     # wait db
     function run-sql() {
-        mysql --protocol=tcp -h mysql -P3307 -u astrooda -p$PASSWORD astrooda  ${1:?}
+        mysql --protocol=tcp -h mysql -P3307 -u astrooda -p$PASSWORD astrooda < ${1:?}
     }
     while ! run-sql <(echo ";") ; do 
         sleep 10
