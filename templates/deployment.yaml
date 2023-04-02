@@ -77,7 +77,7 @@ spec:
             - name: MMODA_PREFIX
               value: {{ .Values.mmoda_prefix }}
             - name: MMODA_MODULES
-              value: {{- join "," .Values.static_modules }}
+              value: {{ join "," .Values.static_modules }}
             - name: DRUPAL_PW
               valueFrom: 
                 secretKeyRef:
