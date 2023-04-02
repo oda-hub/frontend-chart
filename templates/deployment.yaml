@@ -36,6 +36,7 @@ spec:
       - name: init-script
         configMap:
           name: frontend-init-script
+          defaultMode: 0555
       - name: patched-files
         emptyDir: {}
       {{- if .Values.extra_instr_dir.enabled }}
@@ -56,16 +57,15 @@ spec:
             - name: init-script
               mountPath: /init-script.sh
               subPath:  init-script.sh
-              defaultMode: 0744
             - name: patched-files
-              mount_path: /patched-files
+              mountPath: /patched-files
               readOnly: false
             - name: frontend-files
-              mount_path: /var/www/mmoda/sites/default/files
+              mountPath: /var/www/mmoda/sites/default/files
               readOnly: false
             {{- if .Values.extra_instr_dir.enabled }}
             - name: instruments-dir
-              mount_path: /instruments-dir
+              mountPath: /instruments-dir
               readOnly: false
             {{- end }}
           env:
@@ -89,7 +89,7 @@ spec:
                   name: {{ .Values.frontend_secret }}
                   key: jwt-key
             - name: JWT_EXPIRATION
-              value: {{ .Values.jwt_link_expiration }}
+              value: "{{ .Values.jwt_link_expiration }}"
             - name: JWT_URL
               value: {{ .Values.jwt_link_url }}     
       containers:
@@ -140,9 +140,6 @@ spec:
           - name: frontend-files
             mountPath: /var/www/mmoda/sites/default/files
             readOnly: false
-            defaultMode: 777
-          - name: frontend-instruments
-          - name: patched
           {{ if .Values.dev_space_volume.enabled }}
           - name: frontend-dev
             mountPath: /var/www/mmooda/dev
@@ -151,7 +148,7 @@ spec:
           {{ end }}
           {{- if .Values.extra_instr_dir.enabled }}
           - name: instruments-dir
-            mount_path: /var/www/mmoda/sites/all/modules/mmoda/instruments
+            mountPath: /var/www/mmoda/sites/all/modules/mmoda/instruments
             readOnly: false
           {{- end }}
 
