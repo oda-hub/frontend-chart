@@ -46,7 +46,7 @@ data:
     chmod -R 777 /var/www/mmoda/sites/default/files
 
     #reset drupal admin
-    ~/.composer/vendor/bin/drush user-create sitamin --password="tmppwd"; 
+    ~/.composer/vendor/bin/drush user-create sitamin --password=$DRUPAL_PW
     ~/.composer/vendor/bin/drush user-add-role "administrator" sitamin
     ~/.composer/vendor/bin/drush upwd --password=$DRUPAL_PW sitamin
 
@@ -57,8 +57,6 @@ data:
     run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
 
     ~/.composer/vendor/bin/drush cc -y all 
-
-    while true; do sleep 10; done
 
 
 
