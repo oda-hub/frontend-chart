@@ -43,9 +43,11 @@ data:
     ~/.composer/vendor/bin/drush en -y $MMODA_MODULES
  
 
-    chmod -R 777 /frontend-files 
+    chmod -R 777 /var/www/mmoda/sites/default/files
 
     #reset drupal admin
+    ~/.composer/vendor/bin/drush user-create sitamin --password="tmppwd"; 
+    ~/.composer/vendor/bin/drush user-add-role "administrator" sitamin
     ~/.composer/vendor/bin/drush upwd --password=$DRUPAL_PW sitamin
 
     run-sql <(echo "update variable set value='s:"$(echo -n $JWT_EXPIRATION | wc -c)":\"${JWT_EXPIRATION}\";' where name='jwt_link_expiration';")
@@ -55,6 +57,8 @@ data:
     run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
 
     ~/.composer/vendor/bin/drush cc -y all 
+
+    while true; do sleep 10; done
 
 
 
