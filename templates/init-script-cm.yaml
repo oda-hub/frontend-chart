@@ -58,6 +58,8 @@ data:
 
     ~/.composer/vendor/bin/drush cc -y all 
 
+    cp -rfv /var/www/mmoda/sites/all/modules/rules /patched-files/rules
+
 
 
     
