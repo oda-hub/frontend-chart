@@ -25,6 +25,10 @@ data:
     );
     EOF
 
+    echo '#####'
+    cat settings.php
+    echo '#####'
+
     cp settings.php /var/www/mmoda/sites/default/settings.php
     cp /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc .
     sed -i 's@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@$local_name_resolver_url = "{{ .Values.resolver_endpoint }}";@'  mmoda.nameresolver.inc
