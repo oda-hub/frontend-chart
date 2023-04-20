@@ -21,7 +21,7 @@ data:
     # avoid db deadlocks, see https://groups.drupal.org/node/415883
     cat <<- 'EOF' >> settings.php
     $databases['default']['default']['init_commands'] = array(
-      'isolation' => "SET SESSION tx_isolation='READ-COMMITTED'"
+      'isolation' => "SET SESSION transaction_isolation='READ-COMMITTED'"
     );
     EOF
 
