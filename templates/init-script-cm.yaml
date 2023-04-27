@@ -64,7 +64,7 @@ data:
 
     run-sql <(echo "update variable set value='s:"$(echo -n $JWT_EXPIRATION | wc -c)":\"${JWT_EXPIRATION}\";' where name='jwt_link_expiration';")
     run-sql <(echo "update variable set value='s:"$(echo -n $JWT_KEY | wc -c)":\"${JWT_KEY}\";' where name='jwt_link_key';")
-    run-sql <(echo "update variable set value='s:"$(echo -n $JWT_URL | wc -c)":\"${JWT_URL}\";' where name='jwt_link_key';")
+    run-sql <(echo "update variable set value='s:"$(echo -n $JWT_URL | wc -c)":\"${JWT_URL}\";' where name='jwt_link_url';")
 
     run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
 
