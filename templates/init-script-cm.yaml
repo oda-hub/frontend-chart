@@ -68,9 +68,10 @@ data:
 
     run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
 
+    ~/.composer/vendor/bin/drush -y updb
     ~/.composer/vendor/bin/drush cc -y all 
 
-    cp -rfv /var/www/mmoda/sites/all/modules/rules /patched-files/rules
+    #cp -rfv /var/www/mmoda/sites/all/modules/rules /patched-files/rules
 
 
 
