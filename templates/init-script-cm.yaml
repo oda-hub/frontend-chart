@@ -44,11 +44,11 @@ data:
     while ! run-sql <(echo ";") ; do 
         sleep 10
     done
-
-    ~/.composer/vendor/bin/drush -y updb
-
-    # Drush reinstall all mmoda modules
+    
     cd /var/www/mmoda 
+    ~/.composer/vendor/bin/drush -y updb
+    
+    # Drush reinstall all mmoda modules
     ALL_MMODA_MODULES=`~/.composer/vendor/bin/drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
     ~/.composer/vendor/bin/drush dis -y mmoda 
     ~/.composer/vendor/bin/drush pm-uninstall -y $ALL_MMODA_MODULES
