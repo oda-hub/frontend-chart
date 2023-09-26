@@ -50,7 +50,7 @@ data:
     done
     
     cd /var/www/mmoda 
-    ~/.composer/vendor/bin/drush -y updb
+    # ~/.composer/vendor/bin/drush -y updb
     
     # Drush reinstall all mmoda modules
     ALL_MMODA_MODULES=`~/.composer/vendor/bin/drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
