@@ -36,6 +36,8 @@ data:
     cp -rfv /frontend-default-files/* /var/www/mmoda/sites/default/files
 
     [ -d /instruments-dir ] && cp -rfv /var/www/mmoda/sites/all/modules/mmoda/instruments/* /instruments-dir
+    # other way around. If there were instruments initialised, they need to be in the fs 
+    [ -d /instruments-dir ] && cp -rfv /instruments-dir/* /var/www/mmoda/sites/all/modules/mmoda/instruments/
 
     # wait db
     function run-sql() {
