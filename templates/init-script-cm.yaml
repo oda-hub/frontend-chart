@@ -6,7 +6,9 @@ metadata:
 data:
   init-script.sh: |
     #!/bin/bash
-  
+
+    exit 0
+    
     # Install jq if not available
     JQ_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     JQ_BIN=/usr/local/bin/jq
@@ -50,13 +52,13 @@ data:
     cd /var/www/mmoda 
     ~/.composer/vendor/bin/drush -y updb
     
-    # # Drush reinstall all mmoda modules
-    # ALL_MMODA_MODULES=`~/.composer/vendor/bin/drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-    # ~/.composer/vendor/bin/drush dis -y mmoda 
-    # ~/.composer/vendor/bin/drush pm-uninstall -y $ALL_MMODA_MODULES
-    # ~/.composer/vendor/bin/drush pm-uninstall -y mmoda
-    # ~/.composer/vendor/bin/drush en -y mmoda 
-    # ~/.composer/vendor/bin/drush en -y $MMODA_MODULES
+    # Drush reinstall all mmoda modules
+    ALL_MMODA_MODULES=`~/.composer/vendor/bin/drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
+    ~/.composer/vendor/bin/drush dis -y mmoda 
+    ~/.composer/vendor/bin/drush pm-uninstall -y $ALL_MMODA_MODULES
+    ~/.composer/vendor/bin/drush pm-uninstall -y mmoda
+    ~/.composer/vendor/bin/drush en -y mmoda 
+    ~/.composer/vendor/bin/drush en -y $MMODA_MODULES
  
 
     chmod -R 777 /var/www/mmoda/sites/default/files
