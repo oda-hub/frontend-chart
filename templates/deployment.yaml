@@ -136,9 +136,6 @@ spec:
           - name: patched-files
             mountPath: /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc
             subPath: mmoda.nameresolver.inc         
-          - name: patched-files
-            mountPath: /var/www/mmoda/sites/all/modules/rules
-            subPath: rules
           - name: frontend-files
             mountPath: /var/www/mmoda/sites/default/files
             readOnly: false
