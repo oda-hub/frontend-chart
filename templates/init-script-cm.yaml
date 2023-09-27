@@ -6,9 +6,7 @@ metadata:
 data:
   init-script.sh: |
     #!/bin/bash
-
-    set -x
-    
+  
     # Install jq if not available
     JQ_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     JQ_BIN=/usr/local/bin/jq
@@ -50,23 +48,23 @@ data:
     done
     
     cd /var/www/mmoda 
-    # ~/.composer/vendor/bin/drush -y updb
+    ~/.composer/vendor/bin/drush -y updb
     
-    # Drush reinstall all mmoda modules
-    ALL_MMODA_MODULES=`~/.composer/vendor/bin/drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-    ~/.composer/vendor/bin/drush dis -y mmoda 
-    ~/.composer/vendor/bin/drush pm-uninstall -y $ALL_MMODA_MODULES
-    ~/.composer/vendor/bin/drush pm-uninstall -y mmoda
-    ~/.composer/vendor/bin/drush en -y mmoda 
-    ~/.composer/vendor/bin/drush en -y $MMODA_MODULES
+    # # Drush reinstall all mmoda modules
+    # ALL_MMODA_MODULES=`~/.composer/vendor/bin/drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
+    # ~/.composer/vendor/bin/drush dis -y mmoda 
+    # ~/.composer/vendor/bin/drush pm-uninstall -y $ALL_MMODA_MODULES
+    # ~/.composer/vendor/bin/drush pm-uninstall -y mmoda
+    # ~/.composer/vendor/bin/drush en -y mmoda 
+    # ~/.composer/vendor/bin/drush en -y $MMODA_MODULES
  
 
     chmod -R 777 /var/www/mmoda/sites/default/files
 
     #reset drupal admin
-    ~/.composer/vendor/bin/drush user-create sitamin --password=$DRUPAL_PW
-    ~/.composer/vendor/bin/drush user-add-role "administrator" sitamin
-    ~/.composer/vendor/bin/drush upwd --password=$DRUPAL_PW sitamin
+    ~/.composer/vendor/bin/drush user-create admin --password=$DRUPAL_PW
+    ~/.composer/vendor/bin/drush user-add-role "administrator" admin
+    ~/.composer/vendor/bin/drush upwd --password=$DRUPAL_PW admin
 
     run-sql <(echo "update variable set value='s:"$(echo -n $JWT_EXPIRATION | wc -c)":\"${JWT_EXPIRATION}\";' where name='jwt_link_expiration';")
     run-sql <(echo "update variable set value='s:"$(echo -n $JWT_KEY | wc -c)":\"${JWT_KEY}\";' where name='jwt_link_key';")
