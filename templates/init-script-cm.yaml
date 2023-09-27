@@ -6,9 +6,7 @@ metadata:
 data:
   init-script.sh: |
     #!/bin/bash
-
-    exit 0
-    
+   
     # Install jq if not available
     JQ_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
     JQ_BIN=/usr/local/bin/jq
