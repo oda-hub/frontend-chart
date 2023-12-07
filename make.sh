@@ -42,7 +42,7 @@ function upgrade() {
     helm upgrade -n ${ODA_NAMESPACE:?} --install oda-frontend . \
          -f $SITE_VALUES \
          --wait \
-         --set image.tag="$(cat version-short.txt)"  \
+         --set image.tag=a6e7cbd6  \
          --set postfix.image.tag="$(cd postfix-container; git describe --always --tags)" $@
 
     bash make.sh patch-resolver
