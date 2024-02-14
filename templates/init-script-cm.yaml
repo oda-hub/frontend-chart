@@ -62,6 +62,7 @@ data:
     chmod -R 777 /var/www/mmoda/sites/default/files
 
     #reset drupal admin
+    ~/.composer/vendor/bin/drush user-cancel admin || true
     ~/.composer/vendor/bin/drush user-create admin --password=$DRUPAL_PW
     ~/.composer/vendor/bin/drush user-add-role "administrator" admin
     ~/.composer/vendor/bin/drush upwd --password=$DRUPAL_PW admin
