@@ -36,6 +36,8 @@ spec:
 
 {{ end }}
 
+---
+
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
@@ -50,3 +52,18 @@ spec:
   storageClassName: {{ .Values.storage_class }}
   #storageClassName: {{ .Values.storage_class_rwmany }}
   #volumeMode: Filesystem
+
+{{ if .Values.extra_instr_dir.enabled | default false }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: instruments-dir
+spec:
+  accessModes:
+  - ReadWriteMany
+  resources:
+    requests:
+      storage: 1G
+  storageClassName: {{ .Values.storage_class_rwmany }}
+{{ end }}

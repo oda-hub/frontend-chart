@@ -42,11 +42,9 @@ ingress:
   - host: frontend.staging.iu.odahub.io
     paths:
     - /
-  hosts:
   - host: frontend.staging.internal.odahub.io
     paths:
     - /
-  hosts:
   - host: frontend.staging.odahub.io
     paths:
     - /
@@ -64,4 +62,3 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
-

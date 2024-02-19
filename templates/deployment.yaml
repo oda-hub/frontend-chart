@@ -25,7 +25,7 @@ spec:
       serviceAccountName: {{ template "chart.serviceAccountName" . }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      priorityClassName: high-priority
+      priorityClassName: high-priority  
       volumes:
       - name: frontend-config-volume 
         configMap:
@@ -33,13 +33,65 @@ spec:
       - name: frontend-files
         persistentVolumeClaim:
           claimName: frontend-files
-      - name: frontend-settings-php
-        secret:
-          secretName: frontend-settings-php
+      - name: init-script
+        configMap:
+          name: frontend-init-script
+          defaultMode: 0555
+      - name: patched-files
+        emptyDir: {}
+      {{- if .Values.extra_instr_dir.enabled }}
+      - name: instruments-dir
+        persistentVolumeClaim:
+          claimName: instruments-dir
+      {{- end }}
           #{{ if .Values.dev_space_volume.enabled }}
           #      - name: frontend-dev
           #        {{- toYaml .Values.dev_space_volume.volume | nindent 8 }}
           #      {{ end }}
+      initContainers:
+        - name: frontend-initialiser
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ['/init-script.sh']
+          volumeMounts:
+            - name: init-script
+              mountPath: /init-script.sh
+              subPath:  init-script.sh
+            - name: patched-files
+              mountPath: /patched-files
+              readOnly: false
+            - name: frontend-files
+              mountPath: /var/www/mmoda/sites/default/files
+              readOnly: false
+            {{- if .Values.extra_instr_dir.enabled }}
+            - name: instruments-dir
+              mountPath: /instruments-dir
+              readOnly: false
+            {{- end }}
+          env:
+            - name: PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.mysql_pw_secret }}
+                  key: mysql-password
+            - name: MMODA_BASE_URL
+              value: {{ .Values.mmoda_base_url }}
+            - name: MMODA_MODULES
+              value: {{ join "," .Values.static_modules }}
+            - name: DRUPAL_PW
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: drupal-pw
+            - name: JWT_KEY
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: jwt-key
+            - name: JWT_EXPIRATION
+              value: "{{ .Values.jwt_link_expiration }}"
+            - name: JWT_URL
+              value: {{ .Values.jwt_link_url }}     
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -78,10 +130,13 @@ spec:
             mountPath: /etc/apache2/apache2.conf
             subPath: etc-apache2.conf
             readOnly: true
-          - name: frontend-settings-php
+          - name: patched-files
             mountPath: /var/www/mmoda/sites/default/settings.php
-            subPath: drupal7_sites_default_settings.php
-            readOnly: true                
+            subPath: settings.php
+            readOnly: true       
+          - name: patched-files
+            mountPath: /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc
+            subPath: mmoda.nameresolver.inc         
           - name: frontend-files
             mountPath: /var/www/mmoda/sites/default/files
             readOnly: false
@@ -91,6 +146,11 @@ spec:
             subPath: {{ .Values.dev_space_volume.subPath }}
             readOnly: true                
           {{ end }}
+          {{- if .Values.extra_instr_dir.enabled }}
+          - name: instruments-dir
+            mountPath: /var/www/mmoda/sites/all/modules/mmoda/instruments
+            readOnly: false
+          {{- end }}
 
       {{- with .Values.nodeSelector }}
       nodeSelector:
