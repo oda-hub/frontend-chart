@@ -67,3 +67,18 @@ spec:
       storage: 1G
   storageClassName: {{ .Values.storage_class_rwmany }}
 {{ end }}
+
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backups
+  namespace: staging
+spec:
+  storageClassName: nfs
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: 100Gi
