@@ -173,7 +173,7 @@ spec:
           volumeMounts:
             - name: backups
               mountPath: /backups
-              readOnly: true
+              readOnly: false
           env:
             - name: PASSWORD
               valueFrom: 
