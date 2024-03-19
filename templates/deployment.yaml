@@ -164,6 +164,7 @@ spec:
           - bash
           - -c
           - |
+            set -x
             while true; do 
               mysql -h mysql -u astrooda -p$PASSWORD astrooda > /backups/state-snapshot-$(date +%s).sql              
               sleep 3600; 
