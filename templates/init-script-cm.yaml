@@ -74,7 +74,7 @@ data:
     run-sql <(echo "use astrooda; update variable set value='s:30:"vendor/swiftmailer/swiftmailer";' where name='swiftmailer_path';")
 
     if [ -f /backups/state-snapshot.sql ]; then
-      run-sql /backups/state-snapshot.sql
+      echo run-sql /backups/state-snapshot.sql
     else
       echo "No state-snapshot.sql found in /backups"
     fi
