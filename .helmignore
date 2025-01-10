@@ -4,5 +4,3 @@ drupal7-db-for-astrooda
 .git
 postfix-container
 /private
-*config
-!config
