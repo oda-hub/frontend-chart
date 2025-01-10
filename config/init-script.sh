@@ -75,11 +75,11 @@ drush vset -y jwt_link_url $JWT_URL
 
 
 
-# Example set variable in array
-# drush vget --format=json mmoda_settings | 
-#    jq '.mmoda_settings.support_email = ["no-reply@odahub.fr", "savchenko@apc.in2p3.fr"] | 
-#    .mmoda_settings' | 
-#    drush vset --format=json --exact --yes mmoda_settings - 2>/dev/null # because we don't want to see all array in log
+#Example set variable in array
+drush vget --format=json mmoda_settings | 
+   jq '.mmoda_settings.support_email = ["no-reply@odahub.fr", "savchenko@apc.in2p3.fr"] | 
+   .mmoda_settings' | 
+   drush vset --format=json --exact --yes mmoda_settings - 2>/dev/null # because we don't want to see all array in log
 
 
 
