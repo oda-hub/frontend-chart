@@ -4,4 +4,6 @@ metadata:
   name: frontend-init-script
   namespace: {{ .Values.environment }}
 data:
-  init-script.sh: {{ .Files.Get "config/init-script.sh" }}
+  init-script.sh: |
+    {{- .Files.Get "config/init-script.sh" }}
+    
