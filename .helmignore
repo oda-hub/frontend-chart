@@ -5,5 +5,4 @@ drupal7-db-for-astrooda
 postfix-container
 /private
 *config
-!config/
-frontend-container
+!config
