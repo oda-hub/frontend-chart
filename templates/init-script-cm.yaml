@@ -5,4 +5,4 @@ metadata:
   namespace: {{ .Values.environment }}
 data:
   init-script.sh: |
-    {{- .Files.Get "config/init-script.sh" | indent 4 }}
+{{ .Files.Get "config/init-script.sh" | indent 4 }}
