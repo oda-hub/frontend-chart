@@ -6,4 +6,4 @@ metadata:
 data:
   init-script.sh: |
     {{- .Files.Get "config/init-script.sh" }}
-    
+
