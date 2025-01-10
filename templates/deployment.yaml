@@ -69,7 +69,7 @@ spec:
               readOnly: false
             {{- end }}
           env:
-            - name: PASSWORD
+            - name: MYSQL_PASSWORD
               valueFrom: 
                 secretKeyRef:
                   name: {{ .Values.mysql_pw_secret }}
