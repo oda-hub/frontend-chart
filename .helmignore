@@ -1,6 +1,13 @@
 frontend-container
 drupal7-db-for-astrooda
 *.sql
-.git
+.git*
 postfix-container
 /private
+frontend_container_revision.txt
+make.sh
+Makefile
+mattermost*
+template.py
+updating-help-pages.md
+version-short.txt
