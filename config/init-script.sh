@@ -41,10 +41,8 @@ while ! run-sql <(echo ";") ; do
     sleep 10
 done
 
-function drush() {
-    cd /var/www/mmoda
-    ~/.composer/vendor/bin/drush "$@"
-}
+cd /var/www/mmoda
+PATH=~/.composer/vendor/bin/:$PATH
 
 drush -y updb
 
