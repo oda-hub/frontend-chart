@@ -42,43 +42,68 @@ while ! run-sql <(echo ";") ; do
 done
 
 cd /var/www/mmoda
-PATH=~/.composer/vendor/bin/:$PATH
+PATH=~/.composer/vendor/bin:$PATH
 
 drush -y updb
 
-# Drush reinstall all mmoda modules
+# Drush reinstall all mmoda modules (in case new variables defined)
 ALL_MMODA_MODULES=`drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
+ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'
 drush dis -y mmoda 
 drush pm-uninstall -y $ALL_MMODA_MODULES
 drush pm-uninstall -y mmoda
 drush en -y mmoda 
+drush en -y $MMODA_MODULES_FORCE_ENABLE
 drush en -y $ENABLED_MMODA_MODULES
 
 
 chmod -R 777 /var/www/mmoda/sites/default/files
 
 #reset drupal admin
-drush user-create admin --password=$DRUPAL_PW
+drush user-create admin --password=$DRUPAL_PW --mail=$SITE_EMAIL_FROM
 drush user-add-role "administrator" admin
 drush upwd --password=$DRUPAL_PW admin
-# what about admin email?
 
 drush vset -y jwt_link_expiration $JWT_EXPIRATION
 drush vset -y jwt_link_key $JWT_KEY
 drush vset -y jwt_link_url $JWT_URL
 
-# drush vset -y site_mail $SITE_MAIL
-# drush vset -y swiftmailer_sender_email $SWIFTMAIL_SENDER_EMAIL
+
+drush vset -y site_mail $SITE_EMAIL_FROM
+drush vset -y swiftmailer_sender_email $SITE_EMAIL_FROM
+
+emails_to_csv=$EMAILS_TO
+emails_to_arr=(${EMAILS_TO//,/ })
+emails_to_json=$(printf ', "%s"' ${emails_to_arr[@]})
+emails_to_json="[${emails_to_json:2}]"
+
+# support_email: used in callback, first is from second is to
+support_email_json="[\"$SITE_EMAIL_FROM\", \"${emails_to_arr[0]}\"]"
+drush vget --format=json --exact mmoda_settings | 
+    jq ".support_email = [${support_email_json}] " | 
+    drush vset --format=json --exact --yes mmoda_settings - 2>/dev/null # because we don't want to see all array in log
+
+drush vset --format=json --exact --yes update_notify_emails $emails_to_json
+drush vset --yes webform_default_from_address $SITE_EMAIL_FROM
+
+for form_id in 383 392; do
+    query="CREATE TEMPORARY TABLE webform_emails_tmp AS SELECT * FROM webform_emails WHERE nid=$form_id LIMIT 1;"
+    query+="DELETE FROM webform_emails WHERE nid=$form_id;"
+    for (( i=0; i<${#emails_to_arr[@]}; i++ )); do
+        query+="UPDATE webform_emails_tmp SET eid=$((i+1)), email='${emails_to_arr[i]}' from_address=$SITE_EMAIL_FROM;"
+        query+="INSERT INTO webform_emails SELECT * FROM webform_emails_tmp;"
+    done
+done
 
 
+drush vset --yes swiftmailer_smtp_host $swiftmailer_smtp_host
+drush vset --yes swiftmailer_smtp_password $swiftmailer_smtp_password
+drush vset --yes swiftmailer_smtp_port $swiftmailer_smtp_port
+drush vset --yes swiftmailer_smtp_username $swiftmailer_smtp_username
+drush vset --yes swiftmailer_smtp_encryption $swiftmailer_smtp_encryption
 
-#Example set variable in array
-drush vget --format=json mmoda_settings | 
-   jq '.mmoda_settings.support_email = ["no-reply@odahub.fr", "savchenko@apc.in2p3.fr"] | 
-   .mmoda_settings' | 
-   drush vset --format=json --exact --yes mmoda_settings - 2>/dev/null # because we don't want to see all array in log
-
+echo "{\"client_id\": $openid_client_id, \"client_secret\": $openid_client_secret, \"github_scopes\": \"user:email\"}" | 
+drush vset --yes --exact --format=json openid_connect_client_github -
 
 
 drush cc -y all 
