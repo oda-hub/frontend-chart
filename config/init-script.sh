@@ -94,9 +94,10 @@ for form_id in 383 392; do
         query+="UPDATE webform_emails_tmp SET eid=$((i+1)), email=\"${emails_to_arr[i]}\" from_address=\"$SITE_EMAIL_FROM\";"
         query+="INSERT INTO webform_emails SELECT * FROM webform_emails_tmp;"
     done
+
+    drush sql-query "$query"
 done
 
-drush sql-query "$query"
 
 drush vset --yes swiftmailer_smtp_host $swiftmailer_smtp_host
 drush vset --yes swiftmailer_smtp_password $swiftmailer_smtp_password
