@@ -95,6 +95,7 @@ for form_id in 383 392; do
     done
 done
 
+drush sql-query "$query"
 
 drush vset --yes swiftmailer_smtp_host $swiftmailer_smtp_host
 drush vset --yes swiftmailer_smtp_password $swiftmailer_smtp_password
