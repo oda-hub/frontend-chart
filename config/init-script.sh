@@ -48,7 +48,7 @@ drush -y updb
 
 # Drush reinstall all mmoda modules (in case new variables defined)
 ALL_MMODA_MODULES=`drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'
+ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
 drush dis -y mmoda 
 drush pm-uninstall -y $ALL_MMODA_MODULES
 drush pm-uninstall -y mmoda
