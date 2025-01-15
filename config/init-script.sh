@@ -1,5 +1,6 @@
 #!/bin/bash
-set -x
+
+#set -x
 
 # Install jq if not available
 JQ_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
