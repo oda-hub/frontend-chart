@@ -104,7 +104,7 @@ drush vset --yes swiftmailer_smtp_username $swiftmailer_smtp_username
 drush vset --yes swiftmailer_smtp_encryption $swiftmailer_smtp_encryption
 
 echo "{\"client_id\": $openid_client_id, \"client_secret\": $openid_client_secret, \"github_scopes\": \"user:email\"}" | 
-drush vset --yes --exact --format=json openid_connect_client_github -
+jq '.' | drush vset --yes --exact --format=json openid_connect_client_github -
 
 
 drush cc -y all 
