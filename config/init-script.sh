@@ -50,12 +50,12 @@ drush -y updb
 # Drush reinstall all mmoda modules (in case new variables defined)
 ALL_MMODA_MODULES=`drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
 ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-# drush dis -y mmoda 
-# drush pm-uninstall -y $ALL_MMODA_MODULES
-# drush pm-uninstall -y mmoda
-# drush en -y mmoda 
-# drush en -y $MMODA_MODULES_FORCE_ENABLE
-# drush en -y $ENABLED_MMODA_MODULES
+drush dis -y mmoda 
+drush pm-uninstall -y $ALL_MMODA_MODULES
+drush pm-uninstall -y mmoda
+drush en -y mmoda 
+drush en -y $MMODA_MODULES_FORCE_ENABLE
+drush en -y $ENABLED_MMODA_MODULES
 
 
 chmod -R 777 /var/www/mmoda/sites/default/files
