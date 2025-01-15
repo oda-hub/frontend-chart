@@ -91,7 +91,7 @@ for form_id in 383 392; do
     query="CREATE TEMPORARY TABLE webform_emails_tmp AS SELECT * FROM webform_emails WHERE nid=$form_id LIMIT 1;"
     query+="DELETE FROM webform_emails WHERE nid=$form_id;"
     for (( i=0; i<${#emails_to_arr[@]}; i++ )); do
-        query+="UPDATE webform_emails_tmp SET eid=$((i+1)), email=\"${emails_to_arr[i]}\" from_address=\"$SITE_EMAIL_FROM\";"
+        query+="UPDATE webform_emails_tmp SET eid=$((i+1)), email=\"${emails_to_arr[i]}\", from_address=\"$SITE_EMAIL_FROM\";"
         query+="INSERT INTO webform_emails SELECT * FROM webform_emails_tmp;"
     done
 
