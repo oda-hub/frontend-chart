@@ -50,12 +50,12 @@ drush -y updb
 # Drush reinstall all mmoda modules (in case new variables defined)
 ALL_MMODA_MODULES=`drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
 ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-drush dis -y mmoda 
-drush pm-uninstall -y $ALL_MMODA_MODULES
-drush pm-uninstall -y mmoda
-drush en -y mmoda 
-drush en -y $MMODA_MODULES_FORCE_ENABLE
-drush en -y $ENABLED_MMODA_MODULES
+# drush dis -y mmoda 
+# drush pm-uninstall -y $ALL_MMODA_MODULES
+# drush pm-uninstall -y mmoda
+# drush en -y mmoda 
+# drush en -y $MMODA_MODULES_FORCE_ENABLE
+# drush en -y $ENABLED_MMODA_MODULES
 
 
 chmod -R 777 /var/www/mmoda/sites/default/files
@@ -91,7 +91,7 @@ for form_id in 383 392; do
     query="CREATE TEMPORARY TABLE webform_emails_tmp AS SELECT * FROM webform_emails WHERE nid=$form_id LIMIT 1;"
     query+="DELETE FROM webform_emails WHERE nid=$form_id;"
     for (( i=0; i<${#emails_to_arr[@]}; i++ )); do
-        query+="UPDATE webform_emails_tmp SET eid=$((i+1)), email='${emails_to_arr[i]}' from_address='$SITE_EMAIL_FROM';"
+        query+="UPDATE webform_emails_tmp SET eid=$((i+1)), email=\"${emails_to_arr[i]}\" from_address=\"$SITE_EMAIL_FROM\";"
         query+="INSERT INTO webform_emails SELECT * FROM webform_emails_tmp;"
     done
 done
@@ -105,7 +105,7 @@ drush vset --yes swiftmailer_smtp_username $swiftmailer_smtp_username
 drush vset --yes swiftmailer_smtp_encryption $swiftmailer_smtp_encryption
 
 echo "{\"client_id\": \"$openid_client_id\", \"client_secret\": \"$openid_client_secret\", \"github_scopes\": \"user:email\"}" | 
-| drush vset --yes --exact --format=json openid_connect_client_github -
+    drush vset --yes --exact --format=json openid_connect_client_github -
 
 
 drush cc -y all 
