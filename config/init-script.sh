@@ -98,6 +98,7 @@ for form_id in 383 392; do
     drush sql-query "$query"
 done
 
+drush sql-query "DELETE FROM webform_emails WHERE nid=384 AND eid>1;"
 
 drush vset --yes swiftmailer_smtp_host $swiftmailer_smtp_host
 drush vset --yes swiftmailer_smtp_password $swiftmailer_smtp_password
