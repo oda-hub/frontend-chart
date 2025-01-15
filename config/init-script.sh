@@ -61,7 +61,10 @@ ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=jso
 chmod -R 777 /var/www/mmoda/sites/default/files
 
 #reset drupal admin
-drush user-create admin --password=$DRUPAL_PW --mail=$SITE_EMAIL_FROM
+drush user-create admin --password=$DRUPAL_PW
+# user-create will fail with default dump as it already exists, that's ok
+drush sql-query "UPDATE users SET mail='$SITE_EMAIL_FROM' WHERE name='admin';"
+drush user-unblock admin # in case it was blocked in the dump
 drush user-add-role "administrator" admin
 drush upwd --password=$DRUPAL_PW admin
 
