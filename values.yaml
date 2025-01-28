@@ -37,7 +37,7 @@ service:
   port: 80
 
 ingress:
-  enabled: true
+  enabled: false
   hosts:
   - host: frontend.staging.iu.odahub.io
     paths:
@@ -62,3 +62,22 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+mmoda_prefix: /mmoda
+mmoda_base_url: https://staging.odahub.fr/mmoda
+storage_class: nfs
+storage_class_rwmany: nfs
+resolver_endpoint: http://resolver-chart:5000/api/v1.1/byname/
+extra_instr_dir:
+  enabled: true
+static_modules:
+- mmoda_spi_acs
+jwt_link_expiration: "20160"
+jwt_link_url: https://staging.odahub.fr/mmoda/dispatch-data
+email:
+  site_email_from: "noreply@odahub.fr"
+  notification_emails_to:
+  - "savchenko@apc.in2p3.fr"
+
+mysql_pw_secret: mysql-cred
+frontend_secret: frontend-secret
