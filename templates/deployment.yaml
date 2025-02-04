@@ -37,9 +37,11 @@ spec:
         configMap:
           name: frontend-init-script
           defaultMode: 0555
+      {{- if .Values.backup.enabled | default false }}
       - name: backups
         persistentVolumeClaim:
           claimName: backups
+      {{- end }}
       - name: patched-files
         emptyDir: {}
       {{- if .Values.extra_instr_dir.enabled }}
@@ -71,9 +73,11 @@ spec:
               mountPath: /instruments-dir
               readOnly: false
             {{- end }}
+            {{- if .Values.backup.enabled | default false }}
             - name: backups
               mountPath: /backups
               readOnly: true
+            {{- end }}
           env:
             - name: MYSQL_PASSWORD
               valueFrom: 
@@ -197,6 +201,7 @@ spec:
             mountPath: /var/www/mmoda/sites/all/modules/mmoda/instruments
             readOnly: false
           {{- end }}
+        {{- if .Values.backup.enabled | default false }}
         - name: backup
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
@@ -221,7 +226,7 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.mysql_pw_secret }}
                   key: mysql-password
-            
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}
