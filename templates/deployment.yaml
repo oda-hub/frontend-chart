@@ -75,15 +75,11 @@ spec:
               mountPath: /backups
               readOnly: true
           env:
-            - name: PASSWORD
+            - name: MYSQL_PASSWORD
               valueFrom: 
                 secretKeyRef:
                   name: {{ .Values.mysql_pw_secret }}
                   key: mysql-password
-            - name: MMODA_BASE_URL
-              value: {{ .Values.mmoda_base_url }}
-            - name: MMODA_MODULES
-              value: {{ join "," .Values.static_modules }}
             - name: DRUPAL_PW
               valueFrom: 
                 secretKeyRef:
@@ -94,10 +90,54 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.frontend_secret }}
                   key: jwt-key
+            - name: swiftmailer_smtp_host
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: swiftmailer_smtp_host
+            - name: swiftmailer_smtp_port
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: swiftmailer_smtp_port
+            - name: swiftmailer_smtp_username
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: swiftmailer_smtp_username
+            - name: swiftmailer_smtp_password
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: swiftmailer_smtp_password
+            - name: swiftmailer_smtp_encryption
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: swiftmailer_smtp_encryption
+            - name: openid_client_id
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: openid_client_id
+            - name: openid_client_secret
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.frontend_secret }}
+                  key: openid_client_secret
+
+            - name: MMODA_BASE_URL
+              value: {{ .Values.mmoda_base_url }}
+            - name: MMODA_MODULES_FORCE_ENABLE
+              value: {{ join "," .Values.static_modules }}
             - name: JWT_EXPIRATION
               value: "{{ .Values.jwt_link_expiration }}"
             - name: JWT_URL
-              value: {{ .Values.jwt_link_url }}     
+              value: {{ .Values.jwt_link_url }}
+            - name: SITE_EMAIL_FROM
+              value: {{ .Values.email.site_email_from }}
+            - name: EMAILS_TO
+              value: {{ join "," .Values.email.notification_emails_to }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
@@ -146,12 +186,12 @@ spec:
           - name: frontend-files
             mountPath: /var/www/mmoda/sites/default/files
             readOnly: false
-          {{ if .Values.dev_space_volume.enabled }}
-          - name: frontend-dev
-            mountPath: /var/www/mmooda/dev
-            subPath: {{ .Values.dev_space_volume.subPath }}
-            readOnly: true                
-          {{ end }}
+          # {{ if .Values.dev_space_volume.enabled }}
+          # - name: frontend-dev
+          #   mountPath: /var/www/mmooda/dev
+          #   subPath: {{ .Values.dev_space_volume.subPath }}
+          #   readOnly: true                
+          # {{ end }}
           {{- if .Values.extra_instr_dir.enabled }}
           - name: instruments-dir
             mountPath: /var/www/mmoda/sites/all/modules/mmoda/instruments
