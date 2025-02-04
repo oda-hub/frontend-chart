@@ -84,5 +84,5 @@ mysql_pw_secret: mysql-cred
 frontend_secret: frontend-secret
 
 backup:
-  enabled: false
+  enabled: true
   storageSize: 10Gi
