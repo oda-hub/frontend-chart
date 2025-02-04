@@ -112,5 +112,10 @@ drush vset --yes swiftmailer_smtp_encryption $swiftmailer_smtp_encryption
 echo "{\"client_id\": \"$openid_client_id\", \"client_secret\": \"$openid_client_secret\", \"github_scopes\": \"user:email\"}" | 
     drush vset --yes --exact --format=json openid_connect_client_github -
 
+if [ -f /backups/state-snapshot.sql ]; then
+    echo run-sql /backups/state-snapshot.sql
+else
+    echo "No state-snapshot.sql found in /backups"
+fi
 
 drush cc -y all 

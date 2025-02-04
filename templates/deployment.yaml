@@ -37,6 +37,11 @@ spec:
         configMap:
           name: frontend-init-script
           defaultMode: 0555
+      {{- if .Values.backup.enabled | default false }}
+      - name: backups
+        persistentVolumeClaim:
+          claimName: backups
+      {{- end }}
       - name: patched-files
         emptyDir: {}
       {{- if .Values.extra_instr_dir.enabled }}
@@ -67,6 +72,11 @@ spec:
             - name: instruments-dir
               mountPath: /instruments-dir
               readOnly: false
+            {{- end }}
+            {{- if .Values.backup.enabled | default false }}
+            - name: backups
+              mountPath: /backups
+              readOnly: true
             {{- end }}
           env:
             - name: MYSQL_PASSWORD
@@ -191,7 +201,32 @@ spec:
             mountPath: /var/www/mmoda/sites/all/modules/mmoda/instruments
             readOnly: false
           {{- end }}
+        {{- if .Values.backup.enabled | default false }}
+        - name: backup
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command:
+          - bash
+          - -c
+          - |
+            set -x
+            while true; do 
+              mysqldump -h mysql -u astrooda -p$PASSWORD astrooda > /backups/state-snapshot-$(date +%s).sql              
+              sleep 3600; 
+            done
 
+
+          volumeMounts:
+            - name: backups
+              mountPath: /backups
+              readOnly: false
+          env:
+            - name: PASSWORD
+              valueFrom: 
+                secretKeyRef:
+                  name: {{ .Values.mysql_pw_secret }}
+                  key: mysql-password
+        {{- end }}
       {{- with .Values.nodeSelector }}
       nodeSelector:
         {{- toYaml . | nindent 8 }}

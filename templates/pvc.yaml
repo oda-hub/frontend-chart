@@ -64,6 +64,22 @@ spec:
   - ReadWriteMany
   resources:
     requests:
-      storage: 1G
+      storage: {{ .Values.extra_instr_dir.size }}
   storageClassName: {{ .Values.storage_class_rwmany }}
+{{ end }}
+
+{{ if .Values.backup.enabled | default false }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: backups
+  namespace: staging
+spec:
+  storageClassName: {{ .Values.storage_class }}
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ .Values.backup.storageSize }}
 {{ end }}

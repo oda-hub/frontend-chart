@@ -70,6 +70,7 @@ storage_class_rwmany: nfs
 resolver_endpoint: http://resolver-chart:5000/api/v1.1/byname/
 extra_instr_dir:
   enabled: true
+  size: 1G
 static_modules:
 - mmoda_spi_acs
 jwt_link_expiration: "20160"
@@ -81,3 +82,7 @@ email:
 
 mysql_pw_secret: mysql-cred
 frontend_secret: frontend-secret
+
+backup:
+  enabled: true
+  storageSize: 10Gi
