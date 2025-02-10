@@ -78,7 +78,7 @@ metadata:
 spec:
   storageClassName: {{ .Values.storage_class }}
   accessModes:
-    - ReadWriteOnce
+    - ReadWriteMany
   resources:
     requests:
       storage: {{ .Values.backup.storageSize }}
