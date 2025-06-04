@@ -10,8 +10,8 @@ which jq 2>&1 > /dev/null || { curl -sfL $JQ_URL -o $JQ_BIN && chmod +x $JQ_BIN 
 # Generate settings.php from template
 cd /patched-files
 curl https://raw.githubusercontent.com/oda-hub/frontend-chart/master/config/drupal7_sites_default_settings.php.template -o settings.php
-sed -i "s@{{ mmoda_base_url }}@${MMODA_BASE_URL}@" settings.php
-sed -i "s/{{env.PASSWORD}}/${MYSQL_PASSWORD}/" settings.php
+sed -i "s@%%mmoda_base_url%%@${MMODA_BASE_URL}@" settings.php
+sed -i "s/%%env.PASSWORD%%/${MYSQL_PASSWORD}/" settings.php
 
 # avoid db deadlocks, see https://groups.drupal.org/node/415883
 cat <<- 'EOF' >> settings.php
