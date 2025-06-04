@@ -249,7 +249,7 @@ $databases['default']['default'] = array(
     'driver' => 'mysql',
     'database' => 'astrooda',
     'username' => 'astrooda',
-    'password' => '%%env.PASSWORD%%',
+    'password' => '%%MYSQL_PASSWORD%%',
     'host' => 'mysql',
     'prefix' => '',
 );
@@ -306,7 +306,7 @@ $drupal_hash_salt = '';
  * for you.
  */
 
-$base_url = '%%mmoda_base_url%%';  // NO trailing slash!
+$base_url = '{{ .Values.mmoda_base_url }}';  // NO trailing slash!
 
 /**
  * PHP settings:
