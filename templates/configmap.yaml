@@ -9,3 +9,6 @@ data:
 
   etc-apache2.conf: |
 {{ tpl ( .Files.Get "config/etc-apache2.conf" ) . | indent 4 }}
+
+  settings.php: |
+{{ tpl ( .Files.Get "config/drupal7_sites_default_settings.php.template" ) . | indent 4 }}

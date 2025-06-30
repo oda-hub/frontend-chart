@@ -9,9 +9,8 @@ which jq 2>&1 > /dev/null || { curl -sfL $JQ_URL -o $JQ_BIN && chmod +x $JQ_BIN 
 
 # Generate settings.php from template
 cd /patched-files
-curl https://raw.githubusercontent.com/oda-hub/frontend-chart/master/config/drupal7_sites_default_settings.php.template -o settings.php
-sed -i "s@{{ mmoda_base_url }}@${MMODA_BASE_URL}@" settings.php
-sed -i "s/{{env.PASSWORD}}/${MYSQL_PASSWORD}/" settings.php
+cp /frontend-config/settings.php settings.php
+sed -i "s/%%MYSQL_PASSWORD%%/${MYSQL_PASSWORD}/" settings.php
 
 # avoid db deadlocks, see https://groups.drupal.org/node/415883
 cat <<- 'EOF' >> settings.php
@@ -24,7 +23,7 @@ echo '#####'
 cat settings.php
 echo '#####'
 
-cp settings.php /var/www/mmoda/sites/default/settings.php
+cp settings.php /var/www/mmoda/sites/default/settings.php 
 cp /var/www/mmoda/sites/all/modules/mmoda/mmoda.nameresolver.inc .
 sed -i 's@$local_name_resolver_url = "https://resolver-prod.obsuks1.unige.ch/api/v1.1/byname/";@$local_name_resolver_url = "{{ .Values.resolver_endpoint }}";@'  mmoda.nameresolver.inc
 

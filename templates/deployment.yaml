@@ -59,6 +59,9 @@ spec:
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ['/init-script.sh']
           volumeMounts:
+            - name: frontend-config-volume
+              mountPath: /frontend-config
+              readOnly: true
             - name: init-script
               mountPath: /init-script.sh
               subPath:  init-script.sh
@@ -129,9 +132,6 @@ spec:
                 secretKeyRef:
                   name: {{ .Values.frontend_secret }}
                   key: openid_client_secret
-
-            - name: MMODA_BASE_URL
-              value: {{ .Values.mmoda_base_url }}
             - name: MMODA_MODULES_FORCE_ENABLE
               value: {{ join "," .Values.static_modules }}
             - name: JWT_EXPIRATION
