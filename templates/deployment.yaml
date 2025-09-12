@@ -211,7 +211,7 @@ spec:
           - |
             set -x
             while true; do 
-              mysqldump -h mysql -u astrooda -p$PASSWORD astrooda > /backups/state-snapshot-$(date +%s).sql              
+              mysqldump -h mysql -u astrooda -p$PASSWORD --no-tablespace astrooda > /backups/state-snapshot-$(date +%s).sql              
               sleep 3600; 
             done
 
