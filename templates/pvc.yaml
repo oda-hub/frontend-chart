@@ -24,7 +24,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: pvc-isilon-integral
-  # namespace: foo
 spec:
   storageClassName: "" # Empty string must be explicitly set otherwise default StorageClass will be set
   volumeName: pv-isilon-integral{{ .Values.pv_suffix }}
@@ -74,7 +73,6 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: backups
-  namespace: staging
 spec:
   storageClassName: {{ .Values.storage_class }}
   accessModes:
