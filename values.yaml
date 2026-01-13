@@ -91,10 +91,6 @@ dev_space_volume:
   enabled: false
 
 proxyPass:
-- path: /mmoda/dispatch-data/
-  url: http://oda-dispatcher:8000/
-  options: "connectiontimeout=3600 timeout=3600"
-
 - path: /mmoda/dispatch-data/gw/timesystem/
   url: https://integral-timesystem.obsuks1.unige.ch/
   options: "connectiontimeout=3600 timeout=3600"
@@ -115,6 +111,10 @@ proxyPass:
   url: https://fuseki.obsuks1.unige.ch/dataanalysis
   options: "connectiontimeout=3600 timeout=3600"
 
+- path: /mmoda/dispatch-data/
+  url: http://oda-dispatcher:8000/
+  options: "connectiontimeout=3600 timeout=3600"
+  
 db_config: |
   $databases['default']['default'] = array(
       'driver' => 'mysql',
