@@ -245,14 +245,8 @@
  * @endcode
  */
 
-$databases['default']['default'] = array(
-    'driver' => 'mysql',
-    'database' => 'astrooda',
-    'username' => 'astrooda',
-    'password' => '%%MYSQL_PASSWORD%%',
-    'host' => 'mysql',
-    'prefix' => '',
-);
+{{ .Values.db_config }}
+
 /**
  * Access control for update.php script.
  *

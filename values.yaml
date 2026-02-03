@@ -86,3 +86,42 @@ frontend_secret: frontend-secret
 backup:
   enabled: true
   storageSize: 10Gi
+
+dev_space_volume:
+  enabled: false
+
+proxyPass:
+- path: /mmoda/dispatch-data/gw/timesystem/
+  url: https://integral-timesystem.obsuks1.unige.ch/
+  options: "connectiontimeout=3600 timeout=3600"
+
+- path: /mmoda/dispatch-data/gw/integralhk/
+  url: https://integralhk.obsuks1.unige.ch/
+  options: "connectiontimeout=3600 timeout=3600"
+
+- path: /mmoda/dispatch-data/gw/scsystem/
+  url: https://integral-scsystem.obsuks1.unige.ch/
+  options: "connectiontimeout=3600 timeout=3600"
+
+- path: /mmoda/resolver/
+  url: https://resolver-prod.obsuks1.unige.ch/
+  options: "connectiontimeout=3600 timeout=3600"
+
+- path: /mmoda/dispatch-data/gw/odakb
+  url: https://fuseki.obsuks1.unige.ch/dataanalysis
+  options: "connectiontimeout=3600 timeout=3600"
+
+- path: /mmoda/dispatch-data/
+  url: http://oda-dispatcher:8000/
+  options: "connectiontimeout=3600 timeout=3600"
+  
+db_config: |
+  $databases['default']['default'] = array(
+      'driver' => 'mysql',
+      'database' => 'astrooda',
+      'username' => 'astrooda',
+      'password' => '%%MYSQL_PASSWORD%%',
+      'host' => 'mysql',
+      'prefix' => '',
+  );
+
