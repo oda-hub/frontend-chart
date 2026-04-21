@@ -9,6 +9,16 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
+module_controller:
+  enabled: false
+  image:
+    repository: ghcr.io/oda-hub/mmodabot-async-drupal-module-controller
+    tag: latest
+    pullPolicy: IfNotPresent
+  ports:
+    container: 8181
+    service: 8181
+
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""

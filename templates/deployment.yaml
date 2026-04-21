@@ -55,6 +55,8 @@ spec:
           #      {{ end }}
       initContainers:
         - name: frontend-initialiser
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}        
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           command: ['/init-script.sh']
@@ -142,6 +144,53 @@ spec:
               value: {{ .Values.email.site_email_from }}
             - name: EMAILS_TO
               value: {{ join "," .Values.email.notification_emails_to }}
+        
+        {{- if and .Values.module_controller.enabled .Values.extra_instr_dir.enabled }}
+        - name: drupal-module-controller
+          # Setting restartPolicy: Always makes this a sidecar container.
+          # https://kubernetes.io/docs/concepts/workloads/pods/sidecar-containers/
+          restartPolicy: Always
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          image: "{{ .Values.module_controller.image.repository }}:{{ .Values.module_controller.image.tag }}"
+          imagePullPolicy: {{ .Values.module_controller.image.pullPolicy }}
+          ports:
+            - name: modules
+              containerPort: {{ .Values.module_controller.ports.container }}
+          livenessProbe:
+            httpGet:
+              path: /openapi.json
+              port: modules
+            failureThreshold: 5
+            initialDelaySeconds: 15
+            periodSeconds: 60
+            timeoutSeconds: 30
+
+          readinessProbe:
+            httpGet:
+              path: /openapi.json
+              port: modules
+            failureThreshold: 3
+            initialDelaySeconds: 5
+            periodSeconds: 5
+            timeoutSeconds: 10
+
+          env:
+           - name: ODA_JWT_SECRET
+             valueFrom:
+               secretKeyRef:
+                 name: {{ .Values.frontend_secret }}
+                 key: jwt-key
+          
+          volumeMounts:
+          - name: patched-files
+            mountPath: /var/www/mmoda/sites/default/settings.php
+            subPath: settings.php
+            readOnly: true
+          - name: instruments-dir
+            mountPath: /var/www/mmoda/sites/all/modules/mmoda/instruments
+            readOnly: false
+        {{- end }}
       containers:
         - name: {{ .Chart.Name }}
           securityContext:
