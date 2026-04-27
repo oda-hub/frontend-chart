@@ -11,6 +11,12 @@ spec:
       targetPort: http
       protocol: TCP
       name: http
+    {{- if .Values.module_controller.enabled }}
+    - port: {{ .Values.module_controller.ports.service }}
+      targetPort: modules
+      protocol: TCP
+      name: modules
+    {{- end }}
   selector:
     app.kubernetes.io/name: {{ include "chart.name" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
