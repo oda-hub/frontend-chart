@@ -83,7 +83,7 @@ emails_to_json="[${emails_to_json:2}]"
 # support_email: used in callback, first is from second is to
 support_email_json="[\"$SITE_EMAIL_FROM\", \"${emails_to_arr[0]}\"]"
 drush vget --format=json --exact mmoda_settings | 
-    jq ".support_email = [${support_email_json}] " | 
+    jq ".support_email = ${support_email_json}" |
     drush vset --format=json --exact --yes mmoda_settings - 2>/dev/null # because we don't want to see all array in log
 
 drush vset --format=json --exact --yes update_notify_emails $emails_to_json
