@@ -1,11 +1,9 @@
 #!/bin/bash
 
+# Fail fast: any failing command (also inside a pipe) stops the init container,
+# instead of silently leaving a half-configured Drupal behind
+set -eo pipefail
 set -x
-
-# Install jq if not available
-JQ_URL=https://github.com/stedolan/jq/releases/download/jq-1.6/jq-linux64
-JQ_BIN=/usr/local/bin/jq
-which jq 2>&1 > /dev/null || { curl -sfL $JQ_URL -o $JQ_BIN && chmod +x $JQ_BIN ; }
 
 # Generate settings.php from template
 cd /patched-files
@@ -46,21 +44,17 @@ PATH=~/.composer/vendor/bin:$PATH
 
 drush -y updb
 
-# Drush reinstall all mmoda modules (in case new variables defined)
-ALL_MMODA_MODULES=`drush pm-list --type=module --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-ENABLED_MMODA_MODULES=`drush pm-list --type=module --status=enabled --format=json | jq -r '[ keys[] | select(startswith("mmoda_")) ] | join(",")'`
-drush dis -y mmoda 
-drush pm-uninstall -y $ALL_MMODA_MODULES
-drush pm-uninstall -y mmoda
-drush en -y mmoda 
+# Enable the mmoda modules. Already enabled modules stay enabled.
+# Do NOT disable/uninstall/reinstall:
+# uninstalling mmoda deletes mmoda_settings and the help pages.
+drush en -y mmoda
 drush en -y $MMODA_MODULES_FORCE_ENABLE
-drush en -y $ENABLED_MMODA_MODULES
 
 
 chmod -R 777 /var/www/mmoda/sites/default/files
 
 #reset drupal admin
-drush user-create admin --password=$DRUPAL_PW
+drush user-create admin --password=$DRUPAL_PW || true
 # user-create will fail with default dump as it already exists, that's ok
 drush sql-query "UPDATE users SET mail='$SITE_EMAIL_FROM' WHERE name='admin';"
 drush user-unblock admin # in case it was blocked in the dump
@@ -75,16 +69,15 @@ drush vset -y jwt_link_url $JWT_URL
 drush vset -y site_mail $SITE_EMAIL_FROM
 drush vset -y swiftmailer_sender_email $SITE_EMAIL_FROM
 
-emails_to_csv=$EMAILS_TO
 emails_to_arr=(${EMAILS_TO//,/ })
 emails_to_json=$(printf ', "%s"' ${emails_to_arr[@]})
 emails_to_json="[${emails_to_json:2}]"
 
-# support_email: used in callback, first is from second is to
-support_email_json="[\"$SITE_EMAIL_FROM\", \"${emails_to_arr[0]}\"]"
-drush vget --format=json --exact mmoda_settings | 
-    jq ".support_email = ${support_email_json}" |
-    drush vset --format=json --exact --yes mmoda_settings - 2>/dev/null # because we don't want to see all array in log
+# support_email: used in callback
+export SUPPORT_EMAIL_TO="${emails_to_arr[0]}"
+drush php-eval '$s = variable_get("mmoda_settings", array());
+                $s["support_email"] = array(getenv("SITE_EMAIL_FROM"), getenv("SUPPORT_EMAIL_TO"));
+                variable_set("mmoda_settings", $s);'
 
 drush vset --format=json --exact --yes update_notify_emails $emails_to_json
 drush vset --yes webform_default_from_address $SITE_EMAIL_FROM
@@ -103,10 +96,13 @@ done
 drush sql-query "DELETE FROM webform_emails WHERE nid=384 AND eid>1;"
 
 drush vset --yes swiftmailer_smtp_host $swiftmailer_smtp_host
-drush vset --yes swiftmailer_smtp_password $swiftmailer_smtp_password
 drush vset --yes swiftmailer_smtp_port $swiftmailer_smtp_port
-drush vset --yes swiftmailer_smtp_username $swiftmailer_smtp_username
-drush vset --yes swiftmailer_smtp_encryption $swiftmailer_smtp_encryption
+
+# password/username/encryption are empty for SMTP without authentication:
+# "drush vset" without a value fails, so only set them when they are not empty
+[ -z "$swiftmailer_smtp_password" ] || drush vset --yes swiftmailer_smtp_password "$swiftmailer_smtp_password"
+[ -z "$swiftmailer_smtp_username" ] || drush vset --yes swiftmailer_smtp_username "$swiftmailer_smtp_username"
+[ -z "$swiftmailer_smtp_encryption" ] || drush vset --yes swiftmailer_smtp_encryption "$swiftmailer_smtp_encryption"
 
 echo "{\"client_id\": \"$openid_client_id\", \"client_secret\": \"$openid_client_secret\", \"github_scopes\": \"user:email\"}" | 
     drush vset --yes --exact --format=json openid_connect_client_github -
@@ -117,4 +113,11 @@ else
     echo "No state-snapshot.sql found in /backups"
 fi
 
-drush cc -y all 
+drush cc -y all
+
+# Sanity check: fail the init if mmoda_settings is incomplete
+drush php-eval '$s = variable_get("mmoda_settings", array());
+                if (empty($s["common"]) || empty($s["instruments"])) {
+                    fwrite(STDERR, "FATAL: mmoda_settings is incomplete\n"); exit(1);
+                }
+                print "mmoda_settings OK: " . count($s["instruments"]) . " instruments\n";'
